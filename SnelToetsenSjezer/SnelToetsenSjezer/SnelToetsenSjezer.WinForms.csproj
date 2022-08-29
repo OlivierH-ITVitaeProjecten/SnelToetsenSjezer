@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SnelToetsenSjezer.Business\SnelToetsenSjezer.Business.csproj" />
+    <ProjectReference Include="..\SnelToetsenSjezer.Domain\SnelToetsenSjezer.Domain.csproj" />
+	<Reference Include="System.Windows.Base" />
+	<Reference Include="System.Windows.Presentation" />
+  </ItemGroup>
+
+</Project>
