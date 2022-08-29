@@ -24,32 +24,32 @@ namespace SnelToetsenSjezer.Business
                 switch (kLower)
                 {
                     case "ctrl":
-                        mySteps.Add(new string[] { "key", Keys.ControlKey.ToString() }); // ????????
+                        mySteps.Add(new string[] { "key", Keys.ControlKey.ToString() });
                         break;
-                    case "lctrl":
-                        mySteps.Add(new string[] { "key", Keys.LControlKey.ToString() });
-                        break;
-                    case "rctrl":
-                        mySteps.Add(new string[] { "key", Keys.RControlKey.ToString() });
-                        break;
+                    //case "lctrl":
+                    //    mySteps.Add(new string[] { "key", Keys.LControlKey.ToString() });
+                    //    break;
+                    //case "rctrl":
+                    //    mySteps.Add(new string[] { "key", Keys.RControlKey.ToString() });
+                    //    break;
                     case "alt":
-                        mySteps.Add(new string[] { "key", Keys.Alt.ToString() });
+                        mySteps.Add(new string[] { "key", Keys.Menu.ToString() });
                         break;
-                    case "lalt":
-                        mySteps.Add(new string[] { "key", Keys.LMenu.ToString() });
-                        break;
-                    case "ralt":
-                        mySteps.Add(new string[] { "key", Keys.RMenu.ToString() });
-                        break;
+                    //case "lalt":
+                    //    mySteps.Add(new string[] { "key", Keys.LMenu.ToString() });
+                    //    break;
+                    //case "ralt":
+                    //    mySteps.Add(new string[] { "key", Keys.RMenu.ToString() });
+                    //    break;
                     case "shift":
-                        mySteps.Add(new string[] { "key", Keys.Shift.ToString() });
+                        mySteps.Add(new string[] { "key", Keys.ShiftKey.ToString() });
                         break;
-                    case "lshift":
-                        mySteps.Add(new string[] { "key", Keys.LShiftKey.ToString() });
-                        break;
-                    case "rshift":
-                        mySteps.Add(new string[] { "key", Keys.RShiftKey.ToString() });
-                        break;
+                    //case "lshift":
+                    //    mySteps.Add(new string[] { "key", Keys.LShiftKey.ToString() });
+                    //    break;
+                    //case "rshift":
+                    //    mySteps.Add(new string[] { "key", Keys.RShiftKey.ToString() });
+                    //    break;
                     case "enter":
                         mySteps.Add(new string[] { "key", Keys.Enter.ToString() });
                         break;
@@ -80,10 +80,13 @@ namespace SnelToetsenSjezer.Business
                         break;
                     case "pagedown":
                     case "page down":
-                        mySteps.Add(new string[] { "key", Keys.PageDown.ToString() });
+                        mySteps.Add(new string[] { "key", Keys.Next.ToString() });
+                        break;
+                    case @"\":
+                        mySteps.Add(new string[] { "key", Keys.Oem5.ToString() });
                         break;
                     default:
-                        mySteps.Add(new string[] { "string", kLower });
+                        mySteps.Add(new string[] { "string", k.ToUpper() });
                         break;
                 }
             });
@@ -123,11 +126,12 @@ namespace SnelToetsenSjezer.Business
                 }
             }
         }
-        public bool CheckAgainstExpectedKey(string keyInput)
+        public bool CheckAgainstExpectedKey(string keyInput, out bool completedWholeSet)
         {
-            // _currHotKey _currHotKeyStep
             HotKey myHotKey = _hotKeys[_currHotKey];
             List<Array> hotKeySteps = myHotKey.Steps;
+            completedWholeSet = false;
+
             if (_currHotKeyStep < hotKeySteps.Count())
             {
                 Array expectedStep = hotKeySteps[_currHotKeyStep];
@@ -142,6 +146,7 @@ namespace SnelToetsenSjezer.Business
                         if (keyInput == expectedStepValue)
                         {
                             _currHotKeyStep++;
+                            if (_currHotKeyStep == hotKeySteps.Count()) completedWholeSet = true;
                             return true;
                         }
                         break;
@@ -150,6 +155,7 @@ namespace SnelToetsenSjezer.Business
                         if (_testString == expectedStepValue)
                         {
                             _currHotKeyStep++;
+                            if (_currHotKeyStep == hotKeySteps.Count()) completedWholeSet = true;
                             return true;
                         }
                         if (expectedStepValue.StartsWith(_testString))
@@ -160,6 +166,38 @@ namespace SnelToetsenSjezer.Business
                 }
             }
             return false;
+        }
+
+        public string CurrHotKey_CategoryName()
+        {
+            return _hotKeys[_currHotKey].Category;
+
+        }
+        public string CurrHotKey_Description()
+        {
+            return _hotKeys[_currHotKey].Description;
+        }
+        public int[] GetCurrHotKeyAndCount()
+        {
+            return new int[2] { _currHotKey, _hotKeys.Count() };
+        }
+        public int[] GetCurrHotKeyStepAndCount()
+        {
+            HotKey myHotKey = _hotKeys[_currHotKey];
+            List<Array> hotKeySteps = myHotKey.Steps;
+            return new int[2] { _currHotKeyStep, hotKeySteps.Count() };
+        }
+        public void NextHotKey()
+        {
+            _currHotKeyStep = 0;
+            _testString = "";
+            if (_currHotKey < _hotKeys.Count()-1) { 
+                _currHotKey++;
+            }
+            else
+            {
+                Debug.WriteLine("we're done!");
+            }
         }
     }
 }
