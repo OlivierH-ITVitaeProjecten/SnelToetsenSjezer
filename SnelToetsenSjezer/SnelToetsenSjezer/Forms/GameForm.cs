@@ -20,8 +20,12 @@ namespace SnelToetsenSjezer.WinForms.Forms
         {
             int[] currHotKeyAndCount = _myHotKeyService.GetCurrHotKeyAndCount();
             int[] currHotKeyStepAndCount = _myHotKeyService.GetCurrHotKeyStepAndCount();
+            int currHotKeyFails = _myHotKeyService.GetCurrHotKeyFails();
+            
+            string currHotKeyText = $"Hot key {currHotKeyAndCount[0] + 1} of {currHotKeyAndCount[1]}";
+            if (currHotKeyFails > 0) currHotKeyText += $" (Attempt #{currHotKeyFails+1})";
 
-            lbl_currhotkey.Text = $"Hot key {currHotKeyAndCount[0]+1} of {currHotKeyAndCount[1]}";
+            lbl_currhotkey.Text = currHotKeyText;
             lbl_category_val.Text = _myHotKeyService.CurrHotKey_CategoryName();
             lbl_description_val.Text = _myHotKeyService.CurrHotKey_Description();
 
@@ -37,13 +41,21 @@ namespace SnelToetsenSjezer.WinForms.Forms
             string keyCodeAsString = e.KeyCode.ToString();
             if(!_currentlyPressedKeys.ContainsKey(keyCodeAsString) || !_currentlyPressedKeys[keyCodeAsString])
             {
-                bool keyIsValid = _myHotKeyService.CheckAgainstExpectedKey(keyCodeAsString, out bool wholeSetCorrect);
-                if(keyIsValid) progbar_correctsteps.PerformStep();
+                bool keyIsValid = _myHotKeyService.CheckAgainstExpectedKey(keyCodeAsString, out bool wholeSetCorrect, out bool currStepIsStringButIncomplete);
+                if(keyIsValid && !currStepIsStringButIncomplete) progbar_correctsteps.PerformStep();
                 _currentlyPressedKeys[keyCodeAsString] = true;
 
                 Debug.WriteLine(keyIsValid + " " + e.KeyCode);
                 Debug.WriteLine($"keyCode: {e.KeyCode} keyValue: {e.KeyValue} keyData: {e.KeyData}");
-                if(wholeSetCorrect)
+
+                if (!keyIsValid)
+                {
+                    Debug.WriteLine("You done f-ed up boy!");
+                    _myHotKeyService.NextHotKey();
+                    UpdateForm();
+                }
+
+                if (wholeSetCorrect)
                 {
                     Debug.WriteLine("The whole hotkey set is correct woohoo!");
                     _myHotKeyService.NextHotKey();

@@ -11,6 +11,8 @@ namespace SnelToetsenSjezer.Business
         private int _currHotKey = 0;
         private int _currHotKeyStep = 0;
         private string _testString = "";
+        private int _mistakes = 0;
+        private bool _dealingWithFails = false;
 
         public void AddHotKey(string category, string description, string hotKeySteps)
         {
@@ -126,11 +128,12 @@ namespace SnelToetsenSjezer.Business
                 }
             }
         }
-        public bool CheckAgainstExpectedKey(string keyInput, out bool completedWholeSet)
+        public bool CheckAgainstExpectedKey(string keyInput, out bool completedWholeSet, out bool currStepIsStringButIncomplete)
         {
             HotKey myHotKey = _hotKeys[_currHotKey];
             List<Array> hotKeySteps = myHotKey.Steps;
             completedWholeSet = false;
+            currStepIsStringButIncomplete = false;
 
             if (_currHotKeyStep < hotKeySteps.Count())
             {
@@ -160,11 +163,15 @@ namespace SnelToetsenSjezer.Business
                         }
                         if (expectedStepValue.StartsWith(_testString))
                         {
+                            currStepIsStringButIncomplete = true;
                             return true;
                         }
                         break;
                 }
             }
+            myHotKey.Failed = true;
+            myHotKey.Fails++;
+            _mistakes++;
             return false;
         }
 
@@ -187,16 +194,32 @@ namespace SnelToetsenSjezer.Business
             List<Array> hotKeySteps = myHotKey.Steps;
             return new int[2] { _currHotKeyStep, hotKeySteps.Count() };
         }
+        public int GetCurrHotKeyFails()
+        {
+            return _hotKeys[_currHotKey].Fails;
+        }
         public void NextHotKey()
         {
             _currHotKeyStep = 0;
             _testString = "";
-            if (_currHotKey < _hotKeys.Count()-1) { 
+            if (!_dealingWithFails && _currHotKey < _hotKeys.Count()-1) { 
                 _currHotKey++;
             }
             else
             {
-                Debug.WriteLine("we're done!");
+                Debug.WriteLine("we're done! lets see if we need to backtrack!");
+                int firstFailedIndex = _hotKeys.FindIndex(h => h.Failed == true);
+
+                if ((firstFailedIndex >= 0) && (firstFailedIndex <= _hotKeys.Count() - 1))
+                {
+                    Debug.WriteLine("oh crap we have ourselves a fail! backtracking!");
+                    _dealingWithFails = true;
+                    _currHotKey = firstFailedIndex;
+                    _hotKeys[firstFailedIndex].Failed = false;
+                } else
+                {
+                    Debug.WriteLine("f- yeah we're really done! (show gameover screen with stats etc)");
+                }
             }
         }
     }
