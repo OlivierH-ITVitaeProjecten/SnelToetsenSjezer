@@ -6,28 +6,36 @@ namespace SnelToetsenSjezer.WinForms.Forms
 {
     public partial class GameForm : Form
     {
-        private static readonly IHotKeyService _myHotKeyService = new HotKeyService();
-        private static readonly Dictionary<string,bool> _currentlyPressedKeys = new Dictionary<string,bool>();
+        public static IHotKeyGameService? MyHotKeyGameService = null;
 
-        public GameForm()
+        public GameForm(IHotKeyGameService gameService)
         {
             InitializeComponent();
-            _myHotKeyService.ProcessHotkeysXmlFile("../../../../hotkeys.xml");
-            UpdateForm();
+
+            MyHotKeyGameService = gameService;
+            MyHotKeyGameService.SetGameStateUpdatedCallback(UpdateForm);
+            MyHotKeyGameService.SetGameTimerCallback(UpdateTimer);
+
         }
 
-        public void UpdateForm()
+        public void UpdateTimer(int seconds)
         {
-            int[] currHotKeyAndCount = _myHotKeyService.GetCurrHotKeyAndCount();
-            int[] currHotKeyStepAndCount = _myHotKeyService.GetCurrHotKeyStepAndCount();
-            int currHotKeyFails = _myHotKeyService.GetCurrHotKeyFails();
+            TimeSpan time = TimeSpan.FromSeconds(seconds);
+            lbl_timer.Text = time.ToString((seconds > 3600) ? @"hh\:mm\:ss" : @"mm\:ss");
+        }
+
+        public void UpdateForm(string bla)
+        {
+            int[] currHotKeyAndCount = MyHotKeyGameService!.GetCurrHotKeyAndCount();
+            int[] currHotKeyStepAndCount = MyHotKeyGameService.GetCurrHotKeyStepAndCount();
+            int currHotKeyAttempts = MyHotKeyGameService.GetCurrHotKeyAttempt();
             
             string currHotKeyText = $"Hot key {currHotKeyAndCount[0] + 1} of {currHotKeyAndCount[1]}";
-            if (currHotKeyFails > 0) currHotKeyText += $" (Attempt #{currHotKeyFails+1})";
+            if (currHotKeyAttempts > 1) currHotKeyText += $" (Attempt #{currHotKeyAttempts})";
 
             lbl_currhotkey.Text = currHotKeyText;
-            lbl_category_val.Text = _myHotKeyService.CurrHotKey_CategoryName();
-            lbl_description_val.Text = _myHotKeyService.CurrHotKey_Description();
+            lbl_category_val.Text = MyHotKeyGameService.CurrHotKey_CategoryName();
+            lbl_description_val.Text = MyHotKeyGameService.CurrHotKey_Description();
 
             progbar_correctsteps.Visible = true;
             progbar_correctsteps.Minimum = 0;
@@ -38,40 +46,12 @@ namespace SnelToetsenSjezer.WinForms.Forms
 
         public void GameForm_KeyDown(object sender, KeyEventArgs e)
         {
-            string keyCodeAsString = e.KeyCode.ToString();
-            if(!_currentlyPressedKeys.ContainsKey(keyCodeAsString) || !_currentlyPressedKeys[keyCodeAsString])
-            {
-                bool keyIsValid = _myHotKeyService.CheckAgainstExpectedKey(keyCodeAsString, out bool wholeSetCorrect, out bool currStepIsStringButIncomplete);
-                if(keyIsValid && !currStepIsStringButIncomplete) progbar_correctsteps.PerformStep();
-                _currentlyPressedKeys[keyCodeAsString] = true;
-
-                Debug.WriteLine(keyIsValid + " " + e.KeyCode);
-                Debug.WriteLine($"keyCode: {e.KeyCode} keyValue: {e.KeyValue} keyData: {e.KeyData}");
-
-                if (!keyIsValid)
-                {
-                    Debug.WriteLine("You done f-ed up boy!");
-                    _myHotKeyService.NextHotKey();
-                    UpdateForm();
-                }
-
-                if (wholeSetCorrect)
-                {
-                    Debug.WriteLine("The whole hotkey set is correct woohoo!");
-                    _myHotKeyService.NextHotKey();
-                    UpdateForm();
-                }
-            }
-
+            MyHotKeyGameService!.KeyDown(e.KeyCode.ToString());
         }
 
         private void GameForm_KeyUp(object sender, KeyEventArgs e)
         {
-            string keyCodeAsString = e.KeyCode.ToString();
-            if (_currentlyPressedKeys.ContainsKey(keyCodeAsString))
-            {
-                _currentlyPressedKeys[keyCodeAsString] = false;
-            }
+            MyHotKeyGameService!.KeyUp(e.KeyCode.ToString());
         }
     }
 }

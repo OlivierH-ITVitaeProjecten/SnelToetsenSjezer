@@ -1,9 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <hotkeys>
 	<hotkey_group name="Visual Studio">
-		<hotkey description="Maak een property" keys="prop,Tab,Tab" />
+		<hotkey description="Maak een property" keys="P,R,O,P,Tab,Tab" />
 		<hotkey description="Ga naar de solution explorer" keys="Ctrl+Alt+l" />
 		<hotkey description="Zet een breakpoint" keys="F9" />
-		<hotkey description="Ga naar het error window" keys="Ctrl+\+e" />
+		<hotkey description="Ga naar het error window" keys="[Ctrl+\+E][Ctrl+\,Ctrl+E]" />
+		<hotkey description="Comment de geselecteerde text" keys="[Ctrl+K+C][Ctrl+K,Ctrl+C]" />
 	</hotkey_group>
 </hotkeys>

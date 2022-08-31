@@ -35,6 +35,7 @@
             this.pnl_header_devider = new System.Windows.Forms.Panel();
             this.lbl_description_key = new System.Windows.Forms.Label();
             this.lbl_description_val = new System.Windows.Forms.Label();
+            this.lbl_timer = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // lbl_category_key
@@ -50,34 +51,34 @@
             // 
             this.lbl_category_val.Location = new System.Drawing.Point(143, 49);
             this.lbl_category_val.Name = "lbl_category_val";
-            this.lbl_category_val.Size = new System.Drawing.Size(645, 20);
+            this.lbl_category_val.Size = new System.Drawing.Size(475, 20);
             this.lbl_category_val.TabIndex = 0;
             this.lbl_category_val.Text = "My amazing hotkey category";
             this.lbl_category_val.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // progbar_correctsteps
             // 
-            this.progbar_correctsteps.Location = new System.Drawing.Point(12, 192);
+            this.progbar_correctsteps.Location = new System.Drawing.Point(12, 197);
             this.progbar_correctsteps.Name = "progbar_correctsteps";
-            this.progbar_correctsteps.Size = new System.Drawing.Size(776, 23);
+            this.progbar_correctsteps.Size = new System.Drawing.Size(606, 23);
             this.progbar_correctsteps.TabIndex = 1;
             // 
             // lbl_currhotkey
             // 
-            this.lbl_currhotkey.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.lbl_currhotkey.Font = new System.Drawing.Font("Calibri", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.lbl_currhotkey.Location = new System.Drawing.Point(12, 9);
             this.lbl_currhotkey.Name = "lbl_currhotkey";
-            this.lbl_currhotkey.Size = new System.Drawing.Size(776, 30);
+            this.lbl_currhotkey.Size = new System.Drawing.Size(300, 30);
             this.lbl_currhotkey.TabIndex = 2;
             this.lbl_currhotkey.Text = "Hot Key 0 of 0";
-            this.lbl_currhotkey.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lbl_currhotkey.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // pnl_header_devider
             // 
             this.pnl_header_devider.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.pnl_header_devider.Location = new System.Drawing.Point(12, 42);
             this.pnl_header_devider.Name = "pnl_header_devider";
-            this.pnl_header_devider.Size = new System.Drawing.Size(776, 4);
+            this.pnl_header_devider.Size = new System.Drawing.Size(606, 4);
             this.pnl_header_devider.TabIndex = 3;
             // 
             // lbl_description_key
@@ -94,17 +95,28 @@
             this.lbl_description_val.Font = new System.Drawing.Font("Calibri", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.lbl_description_val.Location = new System.Drawing.Point(12, 89);
             this.lbl_description_val.Name = "lbl_description_val";
-            this.lbl_description_val.Size = new System.Drawing.Size(776, 100);
+            this.lbl_description_val.Size = new System.Drawing.Size(606, 100);
             this.lbl_description_val.TabIndex = 0;
             this.lbl_description_val.Text = "Press some buttons that do something do\'h";
             this.lbl_description_val.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // lbl_timer
+            // 
+            this.lbl_timer.Font = new System.Drawing.Font("Calibri", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.lbl_timer.Location = new System.Drawing.Point(318, 9);
+            this.lbl_timer.Name = "lbl_timer";
+            this.lbl_timer.Size = new System.Drawing.Size(300, 30);
+            this.lbl_timer.TabIndex = 2;
+            this.lbl_timer.Text = "00:00";
+            this.lbl_timer.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // GameForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 227);
+            this.ClientSize = new System.Drawing.Size(629, 231);
             this.Controls.Add(this.pnl_header_devider);
+            this.Controls.Add(this.lbl_timer);
             this.Controls.Add(this.lbl_currhotkey);
             this.Controls.Add(this.progbar_correctsteps);
             this.Controls.Add(this.lbl_description_val);
@@ -128,5 +140,6 @@
         private Panel pnl_header_devider;
         private Label lbl_description_key;
         private Label lbl_description_val;
+        private Label lbl_timer;
     }
 }

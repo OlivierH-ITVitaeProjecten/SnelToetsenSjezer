@@ -11,8 +11,6 @@
   <ItemGroup>
     <ProjectReference Include="..\SnelToetsenSjezer.Business\SnelToetsenSjezer.Business.csproj" />
     <ProjectReference Include="..\SnelToetsenSjezer.Domain\SnelToetsenSjezer.Domain.csproj" />
-	<Reference Include="System.Windows.Base" />
-	<Reference Include="System.Windows.Presentation" />
   </ItemGroup>
 
 </Project>
