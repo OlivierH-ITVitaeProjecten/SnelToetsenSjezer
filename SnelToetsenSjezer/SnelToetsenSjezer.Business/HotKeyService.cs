@@ -14,15 +14,15 @@ namespace SnelToetsenSjezer.Business
         {
             Regex multiSolutionRegex = new Regex("\\[[^\\]]*]\\[[^\\]]*]");
             string[] solutions = hotKeySteps.Contains("[") ? multiSolutionRegex.Split(hotKeySteps) : new string[] { hotKeySteps };
-            List<List<Array>> allValidSolutions = new List<List<Array>>();
+            List<List<List<string>>> allValidSolutions = new List<List<List<string>>>();
 
             solutions.ToList().ForEach(hkSolution => {
-                List<Array> newSteps = new List<Array>();
+                List<List<string>> newSteps = new List<List<string>>();
                 string[] solutionSteps = hkSolution.Split(",");
 
                 solutionSteps.ToList().ForEach(k => {
                     bool isCombination = hotKeySteps.Contains("+");
-                    newSteps.Add(isCombination ? k.Split("+") : new string[] { k });
+                    newSteps.Add(isCombination ? k.Split("+").ToList() : new List<string> (){ k });
                 });
 
                 allValidSolutions.Add(newSteps);

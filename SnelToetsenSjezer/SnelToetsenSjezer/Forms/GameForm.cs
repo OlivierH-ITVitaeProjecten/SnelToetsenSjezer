@@ -16,6 +16,7 @@ namespace SnelToetsenSjezer.WinForms.Forms
             MyHotKeyGameService.SetGameStateUpdatedCallback(UpdateForm);
             MyHotKeyGameService.SetGameTimerCallback(UpdateTimer);
 
+            MyHotKeyGameService.StartGame();
         }
 
         public void UpdateTimer(int seconds)

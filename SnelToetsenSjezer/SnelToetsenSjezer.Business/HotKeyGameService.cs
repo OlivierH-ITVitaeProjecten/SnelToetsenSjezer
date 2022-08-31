@@ -21,7 +21,7 @@ namespace SnelToetsenSjezer.Business
         private static readonly System.Windows.Forms.Timer _gameTimer = new System.Windows.Forms.Timer();
         private static int _gameSeconds = 0;
 
-        private string[] _userInputSteps = new string[] { };
+        private List<string> _userInputSteps = new List<string>();
 
         private int _currHotKey = 0;
         private int _currHotKeyStep = 0;
@@ -45,9 +45,11 @@ namespace SnelToetsenSjezer.Business
 
         public void StartGame()
         {
+            Debug.WriteLine("Starting game!");
             _gameTimer.Interval = 1000;
             _gameTimer.Tick += new EventHandler(GameTimer_Tick);
             _gameTimer.Start();
+            gameStateUpdatedCallback("");
         }
         public void GameTimer_Tick(object sender, EventArgs e)
         {
@@ -56,6 +58,7 @@ namespace SnelToetsenSjezer.Business
         }
         public void StopGame()
         {
+            Debug.WriteLine("Stopping game!");
             _gameTimer.Stop();
         }
 
@@ -63,6 +66,7 @@ namespace SnelToetsenSjezer.Business
         {
             if (!_currentlyPressedKeys.ContainsKey(keyName) || !_currentlyPressedKeys[keyName])
             {
+                Debug.WriteLine("KeyDown: " + keyName);
                 _currentlyPressedKeys[keyName] = true;
             }
             /*
@@ -94,7 +98,10 @@ namespace SnelToetsenSjezer.Business
         {
             if (_currentlyPressedKeys.ContainsKey(keyName))
             {
-                _userInputSteps.Append(string.Join("+",_currentlyPressedKeys.Keys));
+                Debug.WriteLine("KeyUp: " + keyName);
+                Debug.WriteLine("- _currentlyPressedKeys.Keys: " + String.Join("+", _currentlyPressedKeys.Keys));
+                _userInputSteps.Add(String.Join("+", _currentlyPressedKeys.Keys));
+                //_userInputSteps.SetValue(String.Join("+", _currentlyPressedKeys.Keys), _userInputSteps.Count());
                 _currentlyPressedKeys.Remove(keyName);
 
                 CheckForProgressOrFail();
@@ -103,30 +110,56 @@ namespace SnelToetsenSjezer.Business
 
         public void CheckForProgressOrFail()
         {
+            Debug.WriteLine("CheckForProgressOrFail");
+            Debug.WriteLine($"- _userInputSteps({_userInputSteps.Count()}): " + String.Join(",", _userInputSteps));
+
+
             HotKey myHotKey = _gameHotKeys[_currHotKey];
-            List<List<Array>> hotKeySolutions = myHotKey.Solutions;
-            
-            hotKeySolutions.ToList().ForEach(hkSolution => { // for each possible solution
-                List<Array> hotKeySolutionSteps = hkSolution;
+            List<List<List<string>>> hotKeySolutions = myHotKey.Solutions;
 
-                _userInputSteps.ToList().ForEach(userInputStep => { // for each user input step
-                    Array userInputStepArray = userInputStep.Split("+");
-                    Array solutionStepArray = hkSolution.ElementAt(0);
-
-                    if(userInputStepArray.Length == solutionStepArray.Length)
-                    {
+            hotKeySolutions.ForEach(hkSolution => { // for each possible solution
+                _userInputSteps.ForEach(userInputStep => { // for each user input step (key/key-combination)
+                    List<string> userInputStepArray = userInputStep.Split("+").ToList();
+                    int solutionStepCount = 0;
+                    hkSolution.ForEach(hkSolutionStep => { // for each step (key/key-combination) of this solution
+                        hkSolutionStep.ForEach(hkSolutionSubStep => { // for each substep (key / part of key-combination) of this solution
+                            if(solutionStepCount < userInputStepArray.Count()) {
+                                if (userInputStepArray[solutionStepCount] == hkSolutionSubStep) {
+                                    Debug.WriteLine("substeps matching!");
+                                }
+                            }
+                        });
                         
-                    }
+                        solutionStepCount++;
+                    });
                 });
-
             });
+            /*
+            int userInputStepCount = 0;
+            _userInputSteps.ToList().ForEach(userInputStep => { // for each user input step
+                
+                Array solutionStepArray = hkSolutionSteps.ElementAt(userInputStepCount);
+
+                Debug.WriteLine("userInputStepArray: " + String.Join(",",userInputStepArray));
+                Debug.WriteLine("solutionStepArray: " + String.Join(",", solutionStepArray));
+
+                if (userInputStepArray.Length <= solutionStepArray.Length)
+                {
+
+                } else
+                {
+                    // more input steps vs steps in this solution, fail
+                }
+                userInputStepCount++;
+            });
+            */
 
         }
 
         public bool CheckAgainstExpectedKey(string keyInput, out bool completedWholeSet, out bool currStepIsStringButIncomplete)
         {
             HotKey myHotKey = _gameHotKeys[_currHotKey];
-            List<List<Array>> hotKeySteps = myHotKey.Solutions;
+            List<List<List<string>>> hotKeySteps = myHotKey.Solutions;
             completedWholeSet = false;
             currStepIsStringButIncomplete = false;
 
@@ -188,7 +221,7 @@ namespace SnelToetsenSjezer.Business
         public int[] GetCurrHotKeyStepAndCount()
         {
             HotKey myHotKey = _gameHotKeys[_currHotKey];
-            List<List<Array>> hotKeySteps = myHotKey.Solutions;
+            List<List<List<string>>> hotKeySteps = myHotKey.Solutions;
             return new int[2] { _currHotKeyStep, hotKeySteps.Count() };
         }
         public int GetCurrHotKeyAttempt()
