@@ -1,6 +1,4 @@
-﻿using SnelToetsenSjezer.Business;
-using SnelToetsenSjezer.Domain.Interfaces;
-using System.Diagnostics;
+﻿using SnelToetsenSjezer.Domain.Interfaces;
 
 namespace SnelToetsenSjezer.WinForms.Forms
 {
@@ -19,30 +17,42 @@ namespace SnelToetsenSjezer.WinForms.Forms
             MyHotKeyGameService.StartGame();
         }
 
-        public void UpdateTimer(int seconds)
+        public void UpdateTimer(int seconds, bool paused)
         {
             TimeSpan time = TimeSpan.FromSeconds(seconds);
             lbl_timer.Text = time.ToString((seconds > 3600) ? @"hh\:mm\:ss" : @"mm\:ss");
+            lbl_timer.ForeColor = paused ? Color.Gray : Color.Black;
         }
 
-        public void UpdateForm(string bla)
+        public void UpdateForm(string basicState, Dictionary<string, string> stateDetails)
         {
-            int[] currHotKeyAndCount = MyHotKeyGameService!.GetCurrHotKeyAndCount();
-            int[] currHotKeyStepAndCount = MyHotKeyGameService.GetCurrHotKeyStepAndCount();
-            int currHotKeyAttempts = MyHotKeyGameService.GetCurrHotKeyAttempt();
-            
-            string currHotKeyText = $"Hot key {currHotKeyAndCount[0] + 1} of {currHotKeyAndCount[1]}";
-            if (currHotKeyAttempts > 1) currHotKeyText += $" (Attempt #{currHotKeyAttempts})";
+            switch (basicState)
+            {
+                case "playing":
+                    string hotKeyText = $"Hot key {stateDetails["index"]} of {stateDetails["count"]}";
+                    if (stateDetails.ContainsKey("attempt"))
+                    {
+                        hotKeyText += (Int32.Parse(stateDetails["attempt"]) > 1) ? $"(Attempt #{stateDetails["attempt"]})" : "";
+                    }
+                    lbl_currhotkey.Text = hotKeyText;
+                    lbl_category_val.Text = stateDetails["category"];
+                    lbl_description_val.Text = stateDetails["description"];
+                    break;
+                case "correct":
+                    lbl_description_val.Text = "Correct!\nGet ready for the next question!";
+                    break;
+                case "failed":
+                    lbl_description_val.Text = "Failed!\n" +
+                        "The correct awnser is: " + stateDetails["solution"];
+                    break;
+                case "finished":
+                    lbl_description_val.Text = "Finished!!!\n(should jump to gameover screen/form)";
 
-            lbl_currhotkey.Text = currHotKeyText;
-            lbl_category_val.Text = MyHotKeyGameService.CurrHotKey_CategoryName();
-            lbl_description_val.Text = MyHotKeyGameService.CurrHotKey_Description();
-
-            progbar_correctsteps.Visible = true;
-            progbar_correctsteps.Minimum = 0;
-            progbar_correctsteps.Step = 1;
-            progbar_correctsteps.Value = currHotKeyStepAndCount[0];
-            progbar_correctsteps.Maximum = currHotKeyStepAndCount[1];
+                    Form myGameOverForm = new GameOverForm(MyHotKeyGameService!);
+                    myGameOverForm.Show();
+                    this.Close();
+                    break;
+            }
         }
 
         public void GameForm_KeyDown(object sender, KeyEventArgs e)
@@ -50,7 +60,7 @@ namespace SnelToetsenSjezer.WinForms.Forms
             MyHotKeyGameService!.KeyDown(e.KeyCode.ToString());
         }
 
-        private void GameForm_KeyUp(object sender, KeyEventArgs e)
+        public void GameForm_KeyUp(object sender, KeyEventArgs e)
         {
             MyHotKeyGameService!.KeyUp(e.KeyCode.ToString());
         }

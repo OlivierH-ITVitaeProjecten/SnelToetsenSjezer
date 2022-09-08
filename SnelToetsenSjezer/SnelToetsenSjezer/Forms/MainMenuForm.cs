@@ -2,7 +2,6 @@ using SnelToetsenSjezer.Business;
 using SnelToetsenSjezer.Domain.Interfaces;
 using SnelToetsenSjezer.Domain.Models;
 using SnelToetsenSjezer.WinForms.Forms;
-using System.Diagnostics;
 
 namespace SnelToetsenSjezer
 {
@@ -24,7 +23,7 @@ namespace SnelToetsenSjezer
         public void InitializeHotKeySjezer()
         {
             MyHotKeyService.ProcessHotkeysXmlFile("../../../../hotkeys.xml");
-            
+
             AllCategories = MyHotKeyService.GetCategories();
             lb_categories.DataSource = AllCategories;
             lb_categories.SetItemChecked(0, true);
@@ -38,7 +37,7 @@ namespace SnelToetsenSjezer
         }
 
         public void HandleCategoryChanges()
-        {            
+        {
             SelectedCategories.Clear();
             foreach (string category in lb_categories.CheckedItems)
             {
@@ -59,9 +58,21 @@ namespace SnelToetsenSjezer
             if (self.Value > self.Maximum) self.Value = self.Maximum;
             if (self.Value < self.Minimum) self.Value = self.Maximum;
         }
+        private List<HotKey> GetRandomItemsFromList(int amount, List<HotKey> list)
+        {
+            var rnd = new Random();
+            List<HotKey> randomHotKeys = list.OrderBy(item => rnd.Next()).ToList();
+            randomHotKeys.RemoveRange(amount, randomHotKeys.Count() - amount);
+            return randomHotKeys;
+        }
+
         private void StartGame_Click(object sender, EventArgs e)
         {
-            MyHotKeyGameService!.SetHotKeys(HotKeysInSelectedCategories);
+            List<HotKey> randomHotKeys = GetRandomItemsFromList(
+                (int)Math.Round(num_howmanyquestions.Value),
+                HotKeysInSelectedCategories
+            );
+            MyHotKeyGameService!.SetHotKeys(randomHotKeys);
 
             Form myGameForm = new GameForm(MyHotKeyGameService);
             myGameForm.Show();

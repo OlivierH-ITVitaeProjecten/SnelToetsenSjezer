@@ -1,7 +1,5 @@
 ﻿using SnelToetsenSjezer.Domain.Interfaces;
 using SnelToetsenSjezer.Domain.Models;
-using System.Diagnostics;
-using System.Text.RegularExpressions;
 using System.Xml;
 
 namespace SnelToetsenSjezer.Business
@@ -12,17 +10,21 @@ namespace SnelToetsenSjezer.Business
 
         public void AddHotKey(string category, string description, string hotKeySteps)
         {
-            Regex multiSolutionRegex = new Regex("\\[[^\\]]*]\\[[^\\]]*]");
-            string[] solutions = hotKeySteps.Contains("[") ? multiSolutionRegex.Split(hotKeySteps) : new string[] { hotKeySteps };
+            List<string> solutions = hotKeySteps.Contains("||") ? hotKeySteps.Split("||").ToList() : new List<string>() { hotKeySteps };
+
             List<List<List<string>>> allValidSolutions = new List<List<List<string>>>();
 
-            solutions.ToList().ForEach(hkSolution => {
+            solutions.ToList().ForEach(hkSolution =>
+            {
                 List<List<string>> newSteps = new List<List<string>>();
-                string[] solutionSteps = hkSolution.Split(",");
+                List<string> solutionSteps = hkSolution.Split(",").ToList();
 
-                solutionSteps.ToList().ForEach(k => {
+                solutionSteps.ToList().ForEach(k =>
+                {
                     bool isCombination = hotKeySteps.Contains("+");
-                    newSteps.Add(isCombination ? k.Split("+").ToList() : new List<string> (){ k });
+                    List<string> mySubSteps = isCombination ? k.Split("+").ToList() : new List<string>() { k };
+
+                    newSteps.Add(mySubSteps);
                 });
 
                 allValidSolutions.Add(newSteps);
@@ -67,7 +69,8 @@ namespace SnelToetsenSjezer.Business
         public List<string> GetCategories()
         {
             List<string> Categories = new List<string>();
-            _allHotKeys.GroupBy(hk => hk.Category).ToList().ForEach(hk_item => {
+            _allHotKeys.GroupBy(hk => hk.Category).ToList().ForEach(hk_item =>
+            {
                 Categories.Add(hk_item.ElementAt(1).Category);
             });
             return Categories;
@@ -79,12 +82,12 @@ namespace SnelToetsenSjezer.Business
         }
         public List<HotKey> GetHotKeysInCategory(string category)
         {
-            if(category.Length < 1) return new List<HotKey> { };
+            if (category.Length < 1) return new List<HotKey> { };
             return _allHotKeys.Where(hk => hk.Category == category).ToList();
         }
         public List<HotKey> GetHotKeysInCategories(List<string> categories)
         {
-            if(categories.Count() < 1) return new List<HotKey> { };
+            if (categories.Count() < 1) return new List<HotKey> { };
             return _allHotKeys.Where(hk => categories.Contains(hk.Category)).ToList();
         }
     }
