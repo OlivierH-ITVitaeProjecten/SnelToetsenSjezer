@@ -22,7 +22,7 @@ namespace SnelToetsenSjezer
 
         public void InitializeHotKeySjezer()
         {
-            MyHotKeyService.ProcessHotkeysXmlFile("../../../../hotkeys.xml");
+            MyHotKeyService.ProcessHotkeysXmlFile("hotkeys.xml");
 
             AllCategories = MyHotKeyService.GetCategories();
             lb_categories.DataSource = AllCategories;

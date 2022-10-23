@@ -71,7 +71,7 @@ namespace SnelToetsenSjezer.Business
             List<string> Categories = new List<string>();
             _allHotKeys.GroupBy(hk => hk.Category).ToList().ForEach(hk_item =>
             {
-                Categories.Add(hk_item.ElementAt(1).Category);
+                Categories.Add(hk_item.ElementAt(0).Category);
             });
             return Categories;
         }

@@ -7,4 +7,7 @@
 		<hotkey description="Ga naar het error window" keys="ControlKey+Oem5,ControlKey+E||ControlKey+Oem5+E" />
 		<hotkey description="Comment de geselecteerde text" keys="ControlKey+K,ControlKey+C||ControlKey+K+C" />
 	</hotkey_group>
+	<hotkey_group name="Windows">
+		<hotkey description="Knippen" keys="ControlKey+X" />
+	</hotkey_group>
 </hotkeys>
