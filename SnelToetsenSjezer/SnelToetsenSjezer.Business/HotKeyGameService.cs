@@ -242,6 +242,7 @@ namespace SnelToetsenSjezer.Business
             HotKeySolutions hotKeySolutions = myHotKey.Solutions;
 
             bool hasAnyMatches = false;
+            bool failedString = false;
 
             hotKeySolutions.ForEach(hkSolution =>
             {
@@ -281,6 +282,11 @@ namespace SnelToetsenSjezer.Business
                                     Debug.WriteLine("string step - " + stepPart.Value + " starts with " + GetUserInputPartsAsString(hkSolutionStepIndex, stepPart.Value.Length));
                                     hasAnyMatches = true;
                                 }
+                                else
+                                {
+                                    Debug.WriteLine("string step - cant match input to expected string, failed!");
+                                    failedString = true;
+                                }
                             }
                             else
                             {
@@ -302,7 +308,7 @@ namespace SnelToetsenSjezer.Business
                     HotKeyIsCorrect();
                 }
             });
-            if (!hasAnyMatches)
+            if (!hasAnyMatches || failedString)
             {
                 HotKeyIsFailed();
             }
