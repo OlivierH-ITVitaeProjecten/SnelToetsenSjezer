@@ -1,4 +1,5 @@
-﻿using SnelToetsenSjezer.Domain.Interfaces;
+﻿using SnelToetsenSjezer.Domain.Enums;
+using SnelToetsenSjezer.Domain.Interfaces;
 using SnelToetsenSjezer.Domain.Models;
 using SnelToetsenSjezer.Domain.Types;
 using System.Diagnostics;
@@ -28,6 +29,10 @@ namespace SnelToetsenSjezer.Business
 
         public void SetHotKeys(List<HotKey> hotKeys)
         {
+            hotKeys.ForEach(hotKey =>
+            {
+                hotKey.ResetForNewGame();
+            });
             _gameHotKeys = hotKeys;
         }
 
@@ -43,7 +48,7 @@ namespace SnelToetsenSjezer.Business
         public void StartGame()
         {
             Debug.WriteLine("Starting game!");
-            if(_gameTimer != null) _gameTimer.Dispose();
+            if (_gameTimer != null) _gameTimer.Dispose();
             _gameSeconds = 0;
             _gameTimer = new Timer();
             _gameTimer.Interval = 1000;
@@ -64,8 +69,12 @@ namespace SnelToetsenSjezer.Business
         {
             Debug.WriteLine("Stopping game!");
             _gameTimer!.Stop();
+
             _currHotKey = 0;
-            if(!forceStop) gameStateUpdatedCallback("finished", new GameStateCallbackData());
+            _dealingWithFails = false;
+            _userInputSteps = new List<List<string>>();
+
+            if (!forceStop) gameStateUpdatedCallback("finished", new GameStateCallbackData());
         }
 
         public void PauseGame()
@@ -110,11 +119,8 @@ namespace SnelToetsenSjezer.Business
                 Debug.WriteLine("KeyDown: " + keyName);
                 _currentlyPressedKeys[keyName] = true;
 
-                string userInputSteps = GetUserInputSteps();
-                userInputSteps += userInputSteps.Length > 0 ? ","+ String.Join("+", _currentlyPressedKeys.Keys) : String.Join("+", _currentlyPressedKeys.Keys);
-
                 gameStateUpdatedCallback("userinputsteps", new GameStateCallbackData() {
-                    { "userinputsteps", userInputSteps }
+                    { "userinputsteps", GetUserInputSteps(true) }
                 });
             }
             Debug.WriteLine("ehh");
@@ -147,21 +153,89 @@ namespace SnelToetsenSjezer.Business
             }
         }
 
-        public string GetUserInputSteps()
+        public string GetUserInputSteps(bool includeCurrentlyPressed = false)
         {
             string usrInputSteps = "";
-            _userInputSteps.ToList().ForEach(step => {
+            _userInputSteps.ToList().ForEach(step =>
+            {
                 string stepStr = "";
-                step.ToList().ForEach(sub_step => {
+                step.ToList().ForEach(sub_step =>
+                {
                     stepStr += stepStr.Length > 0 ? "+" + sub_step : sub_step;
                 });
                 usrInputSteps += usrInputSteps.Length > 0 ? "," + stepStr : stepStr;
             });
+            if (includeCurrentlyPressed)
+            {
+                string currentlyPressed = String.Join("+", _currentlyPressedKeys.Keys);
+                usrInputSteps += usrInputSteps.Length > 0 ? "," + currentlyPressed : currentlyPressed;
+            }
+
             return usrInputSteps;
         }
 
+        public string GetUserInputPartsAsString(int startIndex, int count)
+        {
+            string usrInputSteps = "";
+            int stepIndex = 0;
+            int checkedStepCount = 0;
+            _userInputSteps.ToList().ForEach(step =>
+            {
+                if (stepIndex >= startIndex)
+                {
+                    string stepStr = "";
+                    step.ToList().ForEach(sub_step =>
+                    {
+                        stepStr += sub_step;
+                    });
+                    usrInputSteps += stepStr;
+                    checkedStepCount++;
+                }
+                stepIndex++;
+            });
+            count = checkedStepCount < count ? checkedStepCount : count;
+            return usrInputSteps.Substring(0, count).ToLower();
+        }
+
+        public void FlattenPartOfUserInputToString(int startIndex, int count)
+        {
+            List<List<string>> newUserInputSteps = new List<List<string>>();
+
+            string usrInputStringPart = "";
+            int stepIndex = 0;
+            int strLength = 0;
+
+            _userInputSteps.ToList().ForEach(step =>
+            {
+                if (stepIndex >= startIndex && usrInputStringPart.Length < count)
+                {
+                    string stepStr = "";
+                    step.ToList().ForEach(sub_step =>
+                    {
+                        if (strLength <= count)
+                        {
+                            stepStr += sub_step;
+                            strLength++;
+                        }
+                    });
+                    usrInputStringPart += stepStr;
+                    if (usrInputStringPart.Length == count)
+                    {
+                        newUserInputSteps.Add(new List<string>() { usrInputStringPart.ToLower() });
+                    }
+                }
+                else
+                {
+                    newUserInputSteps.Add(step);
+                }
+                stepIndex++;
+            });
+
+            _userInputSteps = newUserInputSteps;
+        }
+
         public void CheckForProgressOrFail()
-        {            
+        {
             Debug.WriteLine("- _userInputSteps: " + GetUserInputSteps());
 
             HotKey myHotKey = _gameHotKeys[_currHotKey];
@@ -172,21 +246,58 @@ namespace SnelToetsenSjezer.Business
             hotKeySolutions.ForEach(hkSolution =>
             {
                 int hkSolutionStepIndex = 0;
-                double matchingKeys = 0;
+                double matchingSteps = 0;
 
                 hkSolution.ForEach(hkSolutionStep =>
                 {
                     if (hkSolutionStepIndex <= _userInputSteps.Count() - 1)
                     {
-                        if (hkSolutionStep.SequenceEqual(_userInputSteps[hkSolutionStepIndex]))
+                        List<string> hkSolutionStepStrings = new List<string>();
+                        bool isStringStep = false;
+
+                        hkSolutionStep.ForEach(stepPart =>
+                        {
+                            if (stepPart.Type == SolutionStepPartType.String)
+                            {
+                                isStringStep = true;
+
+                                Debug.WriteLine("string step! expected string: " + stepPart.ToString());
+
+                                if (stepPart.Value == GetUserInputPartsAsString(hkSolutionStepIndex, stepPart.Value.Length))
+                                {
+                                    Debug.WriteLine("string step - input steps/parts match the expected string! flatten!");
+                                    FlattenPartOfUserInputToString(hkSolutionStepIndex, stepPart.Value.Length);
+                                    hasAnyMatches = true;
+                                    matchingSteps++;
+                                }
+                                else if (stepPart.Value == _userInputSteps[hkSolutionStepIndex][0])
+                                {
+                                    Debug.WriteLine("string step - step matches the expected string!");
+                                    hasAnyMatches = true;
+                                    matchingSteps++;
+                                }
+                                else if (stepPart.Value.StartsWith(GetUserInputPartsAsString(hkSolutionStepIndex, stepPart.Value.Length)))
+                                {
+                                    Debug.WriteLine("string step - " + stepPart.Value + " starts with " + GetUserInputPartsAsString(hkSolutionStepIndex, stepPart.Value.Length));
+                                    hasAnyMatches = true;
+                                }
+                            }
+                            else
+                            {
+                                hkSolutionStepStrings.Add(stepPart.ToString());
+                            }
+                        });
+
+                        if (!isStringStep && hkSolutionStepStrings.SequenceEqual(_userInputSteps[hkSolutionStepIndex]))
                         {
                             hasAnyMatches = true;
-                            matchingKeys++;
+                            matchingSteps++;
                         }
                     }
                     hkSolutionStepIndex++;
                 });
-                if (matchingKeys == hkSolution.Count())
+                Debug.WriteLine("matchingSteps: " + matchingSteps);
+                if (matchingSteps == hkSolution.Count())
                 {
                     HotKeyIsCorrect();
                 }

@@ -1,4 +1,5 @@
-﻿using SnelToetsenSjezer.Domain.Interfaces;
+﻿using SnelToetsenSjezer.Domain.Enums;
+using SnelToetsenSjezer.Domain.Interfaces;
 using SnelToetsenSjezer.Domain.Models;
 using SnelToetsenSjezer.Domain.Types;
 using System.Xml;
@@ -9,33 +10,49 @@ namespace SnelToetsenSjezer.Business
     {
         private readonly List<HotKey> _allHotKeys = new() { };
 
-        public void AddHotKey(string category, string description, string hotKeySteps)
+        public HotKeySolutions SolutionsStringToObject(string solutions)
         {
-            bool multipleSolutions = hotKeySteps.Contains("||");
-            List<string> solutionsStrings = multipleSolutions ? hotKeySteps.Split("||").ToList() : new List<string>() { hotKeySteps };
-
             HotKeySolutions allSolutions = new HotKeySolutions();
+            bool multipleSolutions = solutions.Contains("||");
+            List<string> solutionsStrings = multipleSolutions ? solutions.Split("||").ToList() : new List<string>() { solutions };
 
             solutionsStrings.ToList().ForEach(solutionString =>
             {
                 HotKeySolution newSolution = new HotKeySolution();
-                List<string> solutionStrParts = solutionString.Split(",").ToList();
+                List<string> solutionStrSteps = solutionString.Split(",").ToList();
 
-                solutionStrParts.ToList().ForEach(keyCombo =>
+                solutionStrSteps.ToList().ForEach(solutionStrStep =>
                 {
                     HotKeySolutionStep newSolutionStep = new HotKeySolutionStep();
-                    bool isCombination = hotKeySteps.Contains("+");
+                    bool isString = solutionStrStep.Contains("'");
+                    bool isCombination = solutionStrStep.Contains("+");
 
-                    if (isCombination)
+                    if (isString)
                     {
-                        keyCombo.Split("+").ToList().ForEach(keyComboPart =>
+                        newSolutionStep.Add(new SolutionStepPart()
                         {
-                            newSolutionStep.Add(keyComboPart);
+                            Type = SolutionStepPartType.String,
+                            Value = solutionStrStep.Substring(1, solutionStrStep.Length - 2)
+                        });
+                    }
+                    else if (isCombination)
+                    {
+                        solutionStrStep.Split("+").ToList().ForEach(solutionStrStepPart =>
+                        {
+                            newSolutionStep.Add(new SolutionStepPart()
+                            {
+                                Type = SolutionStepPartType.Key,
+                                Value = solutionStrStepPart
+                            });
                         });
                     }
                     else
                     {
-                        newSolutionStep.Add(keyCombo);
+                        newSolutionStep.Add(new SolutionStepPart()
+                        {
+                            Type = SolutionStepPartType.Key,
+                            Value = solutionStrStep
+                        });
                     }
 
                     newSolution.Add(newSolutionStep);
@@ -44,12 +61,16 @@ namespace SnelToetsenSjezer.Business
                 allSolutions.Add(newSolution);
             });
 
+            return allSolutions;
+        }
 
+        public void AddHotKey(string category, string description, string solutions)
+        {
             HotKey myNewHotKey = new HotKey()
             {
                 Category = category,
                 Description = description,
-                Solutions = allSolutions
+                Solutions = SolutionsStringToObject(solutions)
             };
             _allHotKeys.Add(myNewHotKey);
         }
