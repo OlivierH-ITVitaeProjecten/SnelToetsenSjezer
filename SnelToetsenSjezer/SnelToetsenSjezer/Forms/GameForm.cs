@@ -1,4 +1,5 @@
 ﻿using SnelToetsenSjezer.Domain.Interfaces;
+using System.Diagnostics;
 
 namespace SnelToetsenSjezer.WinForms.Forms
 {
@@ -53,6 +54,10 @@ namespace SnelToetsenSjezer.WinForms.Forms
                     this.Close();
                     break;
             }
+            if(stateDetails.ContainsKey("userinputsteps"))
+            {
+                lbl_userinputsteps_val.Text = stateDetails["userinputsteps"];
+            }
         }
 
         public void GameForm_KeyDown(object sender, KeyEventArgs e)
@@ -63,6 +68,18 @@ namespace SnelToetsenSjezer.WinForms.Forms
         public void GameForm_KeyUp(object sender, KeyEventArgs e)
         {
             MyHotKeyGameService!.KeyUp(e.KeyCode.ToString());
+        }
+
+        public void GameForm_FormClosing(Object sender, FormClosingEventArgs e)
+        {
+            // below is a workaround for 'e.CloseReason == CloseReason.UserClosing' not working as advertised..
+            bool closedByCode = new StackTrace().GetFrames().Any(x => x.GetMethod().Name == "Close");
+
+            if (!closedByCode)
+            {    
+                Debug.WriteLine("User closed GameForm! force-stopping the game!");
+                MyHotKeyGameService!.StopGame(true);
+            }
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace SnelToetsenSjezer.Domain.Models
+﻿using SnelToetsenSjezer.Domain.Types;
+
+namespace SnelToetsenSjezer.Domain.Models
 {
     public class HotKey
     {
@@ -7,6 +9,6 @@
         public int Seconds { get; set; }
         public string Category { get; set; }
         public string Description { get; set; }
-        public List<List<List<string>>> Solutions { get; set; }
+        public HotKeySolutions Solutions { get; set; }
     }
 }

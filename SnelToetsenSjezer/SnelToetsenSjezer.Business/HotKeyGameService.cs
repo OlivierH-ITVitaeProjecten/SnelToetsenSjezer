@@ -1,18 +1,20 @@
 ﻿using SnelToetsenSjezer.Domain.Interfaces;
 using SnelToetsenSjezer.Domain.Models;
+using SnelToetsenSjezer.Domain.Types;
 using System.Diagnostics;
+using Timer = System.Windows.Forms.Timer;
 
 namespace SnelToetsenSjezer.Business
 {
     public class HotKeyGameService : IHotKeyGameService
     {
         private List<HotKey> _gameHotKeys = new() { };
-        private static Dictionary<string, bool> _currentlyPressedKeys = new Dictionary<string, bool>();
+        private static PressedKeysDict _currentlyPressedKeys = new PressedKeysDict();
 
-        private Action<string, Dictionary<string, string>> gameStateUpdatedCallback = null;
+        private Action<string, GameStateCallbackData> gameStateUpdatedCallback = null;
         private Action<int, bool> gameTimerCallback = null;
 
-        private static readonly System.Windows.Forms.Timer _gameTimer = new System.Windows.Forms.Timer();
+        private static Timer? _gameTimer = null;
         private static int _gameSeconds = 0;
 
         private static bool _isPaused = false;
@@ -29,7 +31,7 @@ namespace SnelToetsenSjezer.Business
             _gameHotKeys = hotKeys;
         }
 
-        public void SetGameStateUpdatedCallback(Action<string, Dictionary<string, string>> callback)
+        public void SetGameStateUpdatedCallback(Action<string, GameStateCallbackData> callback)
         {
             gameStateUpdatedCallback = callback;
         }
@@ -41,11 +43,14 @@ namespace SnelToetsenSjezer.Business
         public void StartGame()
         {
             Debug.WriteLine("Starting game!");
+            if(_gameTimer != null) _gameTimer.Dispose();
+            _gameSeconds = 0;
+            _gameTimer = new Timer();
             _gameTimer.Interval = 1000;
             _gameTimer.Tick += new EventHandler(GameTimer_Tick);
             _gameTimer.Start();
 
-            Dictionary<string, string> myStatusDictionary = new Dictionary<string, string>()
+            GameStateCallbackData stateData = new GameStateCallbackData()
             {
                 { "index", "1" },
                 { "count", _gameHotKeys.Count().ToString() },
@@ -53,14 +58,14 @@ namespace SnelToetsenSjezer.Business
                 { "description", _gameHotKeys[_currHotKey].Description }
             };
 
-            gameStateUpdatedCallback("playing", myStatusDictionary);
+            gameStateUpdatedCallback("playing", stateData);
         }
-        public void StopGame()
+        public void StopGame(bool forceStop = false)
         {
             Debug.WriteLine("Stopping game!");
-            _gameTimer.Stop();
+            _gameTimer!.Stop();
             _currHotKey = 0;
-            gameStateUpdatedCallback("finished", new Dictionary<string, string>());
+            if(!forceStop) gameStateUpdatedCallback("finished", new GameStateCallbackData());
         }
 
         public void PauseGame()
@@ -104,7 +109,15 @@ namespace SnelToetsenSjezer.Business
             {
                 Debug.WriteLine("KeyDown: " + keyName);
                 _currentlyPressedKeys[keyName] = true;
+
+                string userInputSteps = GetUserInputSteps();
+                userInputSteps += userInputSteps.Length > 0 ? ","+ String.Join("+", _currentlyPressedKeys.Keys) : String.Join("+", _currentlyPressedKeys.Keys);
+
+                gameStateUpdatedCallback("userinputsteps", new GameStateCallbackData() {
+                    { "userinputsteps", userInputSteps }
+                });
             }
+            Debug.WriteLine("ehh");
         }
         public void KeyUp(string keyName)
         {
@@ -134,10 +147,25 @@ namespace SnelToetsenSjezer.Business
             }
         }
 
-        public void CheckForProgressOrFail()
+        public string GetUserInputSteps()
         {
+            string usrInputSteps = "";
+            _userInputSteps.ToList().ForEach(step => {
+                string stepStr = "";
+                step.ToList().ForEach(sub_step => {
+                    stepStr += stepStr.Length > 0 ? "+" + sub_step : sub_step;
+                });
+                usrInputSteps += usrInputSteps.Length > 0 ? "," + stepStr : stepStr;
+            });
+            return usrInputSteps;
+        }
+
+        public void CheckForProgressOrFail()
+        {            
+            Debug.WriteLine("- _userInputSteps: " + GetUserInputSteps());
+
             HotKey myHotKey = _gameHotKeys[_currHotKey];
-            List<List<List<string>>> hotKeySolutions = myHotKey.Solutions;
+            HotKeySolutions hotKeySolutions = myHotKey.Solutions;
 
             bool hasAnyMatches = false;
 
@@ -171,7 +199,9 @@ namespace SnelToetsenSjezer.Business
 
         public void HotKeyIsCorrect()
         {
-            gameStateUpdatedCallback("correct", new Dictionary<string, string>() { });
+            gameStateUpdatedCallback("correct", new GameStateCallbackData() {
+                { "userinputsteps", GetUserInputSteps() }
+            });
             _gameHotKeys[_currHotKey].Failed = false;
             PauseGame();
         }
@@ -180,25 +210,26 @@ namespace SnelToetsenSjezer.Business
             _gameHotKeys[_currHotKey].Failed = true;
 
             string hotKeySolutionStr = "";
-            List<List<List<string>>> hotKeySolutions = _gameHotKeys[_currHotKey].Solutions;
-            hotKeySolutions[0].ForEach(solutionStep =>
+            HotKeySolutions hotKeySolutions = _gameHotKeys[_currHotKey].Solutions;
+            hotKeySolutions[0].ToList().ForEach(solutionStep =>
             {
                 if (hotKeySolutionStr != "") hotKeySolutionStr += ",";
                 hotKeySolutionStr += String.Join("+", solutionStep);
             });
 
-            Dictionary<string, string> myStatusDictionary = new Dictionary<string, string>()
+            GameStateCallbackData stateData = new GameStateCallbackData()
             {
-                { "solution", hotKeySolutionStr }
+                { "solution", hotKeySolutionStr },
+                { "userinputsteps", GetUserInputSteps() }
             };
-            gameStateUpdatedCallback("failed", myStatusDictionary);
+            gameStateUpdatedCallback("failed", stateData);
             PauseGame();
         }
 
         public void NextHotKey()
         {
             _userInputSteps = new List<List<string>>();
-            _currentlyPressedKeys = new Dictionary<string, bool>();
+            _currentlyPressedKeys = new PressedKeysDict();
             bool finished = false;
 
             if (!_dealingWithFails && _currHotKey < _gameHotKeys.Count() - 1)
@@ -230,15 +261,16 @@ namespace SnelToetsenSjezer.Business
             }
             if (!finished)
             {
-                Dictionary<string, string> myStatusDictionary = new Dictionary<string, string>()
+                GameStateCallbackData stateData = new GameStateCallbackData()
                 {
                     { "index", (_currHotKey+1).ToString() },
                     { "count", _gameHotKeys.Count().ToString() },
                     { "attempt", _gameHotKeys[_currHotKey].Attempt.ToString() },
                     { "category", _gameHotKeys[_currHotKey].Category },
-                    { "description", _gameHotKeys[_currHotKey].Description }
+                    { "description", _gameHotKeys[_currHotKey].Description },
+                    { "userinputsteps", "" }
                 };
-                gameStateUpdatedCallback("playing", myStatusDictionary);
+                gameStateUpdatedCallback("playing", stateData);
             }
         }
         public List<HotKey> GetGameHotKeys()

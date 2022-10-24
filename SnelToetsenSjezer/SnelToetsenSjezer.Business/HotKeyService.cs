@@ -1,5 +1,6 @@
 ﻿using SnelToetsenSjezer.Domain.Interfaces;
 using SnelToetsenSjezer.Domain.Models;
+using SnelToetsenSjezer.Domain.Types;
 using System.Xml;
 
 namespace SnelToetsenSjezer.Business
@@ -10,24 +11,37 @@ namespace SnelToetsenSjezer.Business
 
         public void AddHotKey(string category, string description, string hotKeySteps)
         {
-            List<string> solutions = hotKeySteps.Contains("||") ? hotKeySteps.Split("||").ToList() : new List<string>() { hotKeySteps };
+            bool multipleSolutions = hotKeySteps.Contains("||");
+            List<string> solutionsStrings = multipleSolutions ? hotKeySteps.Split("||").ToList() : new List<string>() { hotKeySteps };
 
-            List<List<List<string>>> allValidSolutions = new List<List<List<string>>>();
+            HotKeySolutions allSolutions = new HotKeySolutions();
 
-            solutions.ToList().ForEach(hkSolution =>
+            solutionsStrings.ToList().ForEach(solutionString =>
             {
-                List<List<string>> newSteps = new List<List<string>>();
-                List<string> solutionSteps = hkSolution.Split(",").ToList();
+                HotKeySolution newSolution = new HotKeySolution();
+                List<string> solutionStrParts = solutionString.Split(",").ToList();
 
-                solutionSteps.ToList().ForEach(k =>
+                solutionStrParts.ToList().ForEach(keyCombo =>
                 {
+                    HotKeySolutionStep newSolutionStep = new HotKeySolutionStep();
                     bool isCombination = hotKeySteps.Contains("+");
-                    List<string> mySubSteps = isCombination ? k.Split("+").ToList() : new List<string>() { k };
 
-                    newSteps.Add(mySubSteps);
+                    if (isCombination)
+                    {
+                        keyCombo.Split("+").ToList().ForEach(keyComboPart =>
+                        {
+                            newSolutionStep.Add(keyComboPart);
+                        });
+                    }
+                    else
+                    {
+                        newSolutionStep.Add(keyCombo);
+                    }
+
+                    newSolution.Add(newSolutionStep);
                 });
 
-                allValidSolutions.Add(newSteps);
+                allSolutions.Add(newSolution);
             });
 
 
@@ -35,7 +49,7 @@ namespace SnelToetsenSjezer.Business
             {
                 Category = category,
                 Description = description,
-                Solutions = allValidSolutions
+                Solutions = allSolutions
             };
             _allHotKeys.Add(myNewHotKey);
         }

@@ -10,4 +10,7 @@
 	<hotkey_group name="Windows">
 		<hotkey description="Knippen" keys="ControlKey+X" />
 	</hotkey_group>
+	<hotkey_group name="Buggy spul?">
+		<hotkey description="Maak een property" keys="P,R,O,P,Tab,Tab" />
+	</hotkey_group>
 </hotkeys>
