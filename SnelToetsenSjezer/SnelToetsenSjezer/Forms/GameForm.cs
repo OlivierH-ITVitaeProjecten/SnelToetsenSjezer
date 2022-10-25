@@ -30,7 +30,7 @@ namespace SnelToetsenSjezer.WinForms.Forms
             switch (basicState)
             {
                 case "playing":
-                    string hotKeyText = $"Hot key {stateDetails["index"]} of {stateDetails["count"]}";
+                    string hotKeyText = $"Hotkey {stateDetails["index"]} of {stateDetails["count"]}";
                     if (stateDetails.ContainsKey("attempt"))
                     {
                         hotKeyText += (Int32.Parse(stateDetails["attempt"]) > 1) ? $"(Attempt #{stateDetails["attempt"]})" : "";

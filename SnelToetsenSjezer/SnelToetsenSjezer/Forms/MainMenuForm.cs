@@ -34,6 +34,8 @@ namespace SnelToetsenSjezer
             lbl_howmanyquestions.Text = $"How many questions? (1-{initialMaxHotKeys})";
             num_howmanyquestions.Minimum = 1;
             num_howmanyquestions.Maximum = initialMaxHotKeys;
+
+            num_howmanyquestions.Value = num_howmanyquestions.Maximum; // temp
         }
 
         public void HandleCategoryChanges()
@@ -50,6 +52,8 @@ namespace SnelToetsenSjezer
             lbl_howmanyquestions.Text = $"How many questions? (1-{hotKeyCount})";
             num_howmanyquestions.Maximum = hotKeyCount;
             if (num_howmanyquestions.Value > hotKeyCount) num_howmanyquestions.Value = hotKeyCount;
+
+            num_howmanyquestions.Value = num_howmanyquestions.Maximum; // temp
         }
 
         private void HowManyQuestions_ValueChanged(object sender, EventArgs e)

@@ -19,7 +19,7 @@ namespace SnelToetsenSjezer.Business
         private static int _gameSeconds = 0;
 
         private static bool _isPaused = false;
-        private static int _pauseDurationDefault = 3;
+        private static int _pauseDurationDefault = 2;
         private static int _pauseDuration = 0;
 
         private List<List<string>> _userInputSteps = new List<List<string>>();

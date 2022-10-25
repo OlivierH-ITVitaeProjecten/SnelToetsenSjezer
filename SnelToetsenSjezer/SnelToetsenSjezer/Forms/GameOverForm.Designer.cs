@@ -43,36 +43,36 @@
             // 
             // NumHotKeysLabel
             // 
-            this.NumHotKeysLabel.Location = new System.Drawing.Point(12, 9);
+            this.NumHotKeysLabel.Location = new System.Drawing.Point(12, 8);
             this.NumHotKeysLabel.Name = "NumHotKeysLabel";
-            this.NumHotKeysLabel.Size = new System.Drawing.Size(160, 25);
+            this.NumHotKeysLabel.Size = new System.Drawing.Size(160, 22);
             this.NumHotKeysLabel.TabIndex = 0;
-            this.NumHotKeysLabel.Text = "Number of HotKeys:";
+            this.NumHotKeysLabel.Text = "Number of Hotkeys:";
             this.NumHotKeysLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // TimeSpentLabel
             // 
-            this.TimeSpentLabel.Location = new System.Drawing.Point(12, 34);
+            this.TimeSpentLabel.Location = new System.Drawing.Point(12, 30);
             this.TimeSpentLabel.Name = "TimeSpentLabel";
-            this.TimeSpentLabel.Size = new System.Drawing.Size(160, 25);
+            this.TimeSpentLabel.Size = new System.Drawing.Size(160, 22);
             this.TimeSpentLabel.TabIndex = 1;
             this.TimeSpentLabel.Text = "Total time spent:";
             this.TimeSpentLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // NumHotKeysValue
             // 
-            this.NumHotKeysValue.Location = new System.Drawing.Point(178, 9);
+            this.NumHotKeysValue.Location = new System.Drawing.Point(178, 8);
             this.NumHotKeysValue.Name = "NumHotKeysValue";
-            this.NumHotKeysValue.Size = new System.Drawing.Size(160, 25);
+            this.NumHotKeysValue.Size = new System.Drawing.Size(160, 22);
             this.NumHotKeysValue.TabIndex = 0;
             this.NumHotKeysValue.Text = "5";
             this.NumHotKeysValue.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // TimeSpentValue
             // 
-            this.TimeSpentValue.Location = new System.Drawing.Point(178, 34);
+            this.TimeSpentValue.Location = new System.Drawing.Point(178, 30);
             this.TimeSpentValue.Name = "TimeSpentValue";
-            this.TimeSpentValue.Size = new System.Drawing.Size(160, 25);
+            this.TimeSpentValue.Size = new System.Drawing.Size(160, 22);
             this.TimeSpentValue.TabIndex = 0;
             this.TimeSpentValue.Text = "00:25";
             this.TimeSpentValue.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -85,25 +85,25 @@
             this.HotKeyDetailsContainer.Controls.Add(this.HotKeyDetails_TimeColumnLabel);
             this.HotKeyDetailsContainer.Controls.Add(this.HotKeyDetails_AttemptsColumnLabel);
             this.HotKeyDetailsContainer.Controls.Add(this.HotKeyDetails_HotKeyColumnLabel);
-            this.HotKeyDetailsContainer.Location = new System.Drawing.Point(12, 87);
+            this.HotKeyDetailsContainer.Location = new System.Drawing.Point(12, 77);
             this.HotKeyDetailsContainer.Name = "HotKeyDetailsContainer";
-            this.HotKeyDetailsContainer.Size = new System.Drawing.Size(776, 351);
+            this.HotKeyDetailsContainer.Size = new System.Drawing.Size(776, 310);
             this.HotKeyDetailsContainer.TabIndex = 2;
             // 
             // HotKeyDetailsPanel
             // 
             this.HotKeyDetailsPanel.AutoScroll = true;
             this.HotKeyDetailsPanel.BackColor = System.Drawing.SystemColors.Control;
-            this.HotKeyDetailsPanel.Location = new System.Drawing.Point(2, 30);
+            this.HotKeyDetailsPanel.Location = new System.Drawing.Point(2, 26);
             this.HotKeyDetailsPanel.Name = "HotKeyDetailsPanel";
-            this.HotKeyDetailsPanel.Size = new System.Drawing.Size(768, 315);
+            this.HotKeyDetailsPanel.Size = new System.Drawing.Size(768, 278);
             this.HotKeyDetailsPanel.TabIndex = 1;
             // 
             // HotKeyDetails_TimeColumnLabel
             // 
             this.HotKeyDetails_TimeColumnLabel.Location = new System.Drawing.Point(605, 1);
             this.HotKeyDetails_TimeColumnLabel.Name = "HotKeyDetails_TimeColumnLabel";
-            this.HotKeyDetails_TimeColumnLabel.Size = new System.Drawing.Size(160, 25);
+            this.HotKeyDetails_TimeColumnLabel.Size = new System.Drawing.Size(160, 22);
             this.HotKeyDetails_TimeColumnLabel.TabIndex = 0;
             this.HotKeyDetails_TimeColumnLabel.Text = "Time";
             this.HotKeyDetails_TimeColumnLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -112,7 +112,7 @@
             // 
             this.HotKeyDetails_AttemptsColumnLabel.Location = new System.Drawing.Point(440, 1);
             this.HotKeyDetails_AttemptsColumnLabel.Name = "HotKeyDetails_AttemptsColumnLabel";
-            this.HotKeyDetails_AttemptsColumnLabel.Size = new System.Drawing.Size(160, 25);
+            this.HotKeyDetails_AttemptsColumnLabel.Size = new System.Drawing.Size(160, 22);
             this.HotKeyDetails_AttemptsColumnLabel.TabIndex = 0;
             this.HotKeyDetails_AttemptsColumnLabel.Text = "Attempts";
             this.HotKeyDetails_AttemptsColumnLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -121,25 +121,25 @@
             // 
             this.HotKeyDetails_HotKeyColumnLabel.Location = new System.Drawing.Point(3, 1);
             this.HotKeyDetails_HotKeyColumnLabel.Name = "HotKeyDetails_HotKeyColumnLabel";
-            this.HotKeyDetails_HotKeyColumnLabel.Size = new System.Drawing.Size(425, 25);
+            this.HotKeyDetails_HotKeyColumnLabel.Size = new System.Drawing.Size(425, 22);
             this.HotKeyDetails_HotKeyColumnLabel.TabIndex = 0;
-            this.HotKeyDetails_HotKeyColumnLabel.Text = "HotKey";
+            this.HotKeyDetails_HotKeyColumnLabel.Text = "Hotkey";
             this.HotKeyDetails_HotKeyColumnLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // HotKeyDetailsLabel
             // 
-            this.HotKeyDetailsLabel.Location = new System.Drawing.Point(12, 59);
+            this.HotKeyDetailsLabel.Location = new System.Drawing.Point(12, 52);
             this.HotKeyDetailsLabel.Name = "HotKeyDetailsLabel";
-            this.HotKeyDetailsLabel.Size = new System.Drawing.Size(160, 25);
+            this.HotKeyDetailsLabel.Size = new System.Drawing.Size(160, 22);
             this.HotKeyDetailsLabel.TabIndex = 1;
-            this.HotKeyDetailsLabel.Text = "HotKey details:";
+            this.HotKeyDetailsLabel.Text = "Hotkey details:";
             this.HotKeyDetailsLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // GameOverForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(800, 397);
             this.Controls.Add(this.HotKeyDetailsContainer);
             this.Controls.Add(this.HotKeyDetailsLabel);
             this.Controls.Add(this.TimeSpentLabel);

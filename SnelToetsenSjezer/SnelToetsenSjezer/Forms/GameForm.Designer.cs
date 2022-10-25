@@ -63,7 +63,7 @@
             this.lbl_currhotkey.Name = "lbl_currhotkey";
             this.lbl_currhotkey.Size = new System.Drawing.Size(300, 30);
             this.lbl_currhotkey.TabIndex = 2;
-            this.lbl_currhotkey.Text = "Hot Key 0 of 0";
+            this.lbl_currhotkey.Text = "Hotkey 0 of 0";
             this.lbl_currhotkey.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // pnl_header_devider
