@@ -44,7 +44,7 @@ namespace SnelToetsenSjezer.WinForms.Forms
                     break;
                 case "failed":
                     lbl_description_val.Text = "Failed!\n" +
-                        "The correct awnser is: " + stateDetails["solution"];
+                        "The correct answer is: " + stateDetails["solution"];
                     break;
                 case "finished":
                     lbl_description_val.Text = "Finished!!!\n(should jump to gameover screen/form)";
@@ -54,7 +54,7 @@ namespace SnelToetsenSjezer.WinForms.Forms
                     this.Close();
                     break;
             }
-            if(stateDetails.ContainsKey("userinputsteps"))
+            if (stateDetails.ContainsKey("userinputsteps"))
             {
                 lbl_userinputsteps_val.Text = stateDetails["userinputsteps"];
             }
@@ -76,7 +76,7 @@ namespace SnelToetsenSjezer.WinForms.Forms
             bool closedByCode = new StackTrace().GetFrames().Any(x => x.GetMethod().Name == "Close");
 
             if (!closedByCode)
-            {    
+            {
                 Debug.WriteLine("User closed GameForm! force-stopping the game!");
                 MyHotKeyGameService!.StopGame(true);
             }
