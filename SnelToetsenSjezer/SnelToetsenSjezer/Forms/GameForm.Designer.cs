@@ -36,6 +36,9 @@
             this.lbl_description_val = new System.Windows.Forms.Label();
             this.lbl_timer = new System.Windows.Forms.Label();
             this.lbl_userinputsteps_val = new System.Windows.Forms.Label();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.label1 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // lbl_category_key
@@ -88,9 +91,9 @@
             this.lbl_description_val.Font = new System.Drawing.Font("Calibri", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.lbl_description_val.Location = new System.Drawing.Point(12, 89);
             this.lbl_description_val.Name = "lbl_description_val";
-            this.lbl_description_val.Size = new System.Drawing.Size(606, 110);
+            this.lbl_description_val.Size = new System.Drawing.Size(606, 100);
             this.lbl_description_val.TabIndex = 0;
-            this.lbl_description_val.Text = "Press some buttons that do something do\'h";
+            this.lbl_description_val.Text = "My amazing hotkey description";
             this.lbl_description_val.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // lbl_timer
@@ -106,18 +109,47 @@
             // lbl_userinputsteps_val
             // 
             this.lbl_userinputsteps_val.Font = new System.Drawing.Font("Calibri", 11.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point);
-            this.lbl_userinputsteps_val.Location = new System.Drawing.Point(12, 207);
+            this.lbl_userinputsteps_val.Location = new System.Drawing.Point(124, 207);
             this.lbl_userinputsteps_val.Name = "lbl_userinputsteps_val";
-            this.lbl_userinputsteps_val.Size = new System.Drawing.Size(606, 25);
+            this.lbl_userinputsteps_val.Size = new System.Drawing.Size(363, 25);
             this.lbl_userinputsteps_val.TabIndex = 4;
             this.lbl_userinputsteps_val.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // textBox1
+            // 
+            this.textBox1.Enabled = false;
+            this.textBox1.Font = new System.Drawing.Font("Calibri", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.textBox1.Location = new System.Drawing.Point(492, 207);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(125, 26);
+            this.textBox1.TabIndex = 5;
+            // 
+            // panel1
+            // 
+            this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.panel1.Location = new System.Drawing.Point(12, 197);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(606, 4);
+            this.panel1.TabIndex = 3;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(271, 189);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(68, 15);
+            this.label1.TabIndex = 6;
+            this.label1.Text = " Your input ";
             // 
             // GameForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(629, 241);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.textBox1);
             this.Controls.Add(this.lbl_userinputsteps_val);
+            this.Controls.Add(this.panel1);
             this.Controls.Add(this.pnl_header_devider);
             this.Controls.Add(this.lbl_timer);
             this.Controls.Add(this.lbl_currhotkey);
@@ -131,6 +163,7 @@
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.GameForm_KeyDown);
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.GameForm_KeyUp);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -144,5 +177,8 @@
         private Label lbl_description_val;
         private Label lbl_timer;
         private Label lbl_userinputsteps_val;
+        private TextBox textBox1;
+        private Panel panel1;
+        private Label label1;
     }
 }
