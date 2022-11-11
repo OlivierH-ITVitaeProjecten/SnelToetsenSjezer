@@ -10,43 +10,17 @@ namespace SnelToetsenSjezer.WinForms.Forms
             InitializeComponent();
 
             List<HotKey> gameHotKeys = gameService.GetGameHotKeys();
-            int gameDuration = gameService.GetGameDuration();
 
             NumHotKeysValue.Text = gameHotKeys.Count().ToString();
-            TimeSpentValue.Text = gameDuration.ToString();
-
-            int hotKeyCounter = 0;
+            TimeSpentValue.Text = gameService.GameTicksToTimeStr();
 
             gameHotKeys.ForEach(hotKey =>
             {
-                Panel detailPanel = new Panel();
-                detailPanel.Size = new Size(768, 25);
-                detailPanel.Location = new Point(0, 25 * hotKeyCounter);
-
-                Label lblHotKey = new Label();
-                lblHotKey.Size = new Size(430, 25);
-                lblHotKey.Text = hotKey.Description;
-                lblHotKey.BorderStyle = BorderStyle.FixedSingle;
-
-                Label lblAttempts = new Label();
-                lblAttempts.Size = new Size(160, 25);
-                lblAttempts.Location = new Point(440, 0);
-                lblAttempts.Text = hotKey.Attempt.ToString();
-                lblAttempts.BorderStyle = BorderStyle.FixedSingle;
-
-                Label lblTime = new Label();
-                lblTime.Size = new Size(160, 25);
-                lblTime.Location = new Point(600, 0);
-                lblTime.Text = hotKey.Seconds.ToString();
-                lblTime.BorderStyle = BorderStyle.FixedSingle;
-
-                detailPanel.Controls.Add(lblHotKey);
-                detailPanel.Controls.Add(lblAttempts);
-                detailPanel.Controls.Add(lblTime);
-
-                HotKeyDetailsPanel.Controls.Add(detailPanel);
-
-                hotKeyCounter++;
+                datagrid_hotkeydetails.Rows.Add(
+                    hotKey.Description,
+                    hotKey.Attempt.ToString(),
+                    gameService.GameTicksToTimeStr(hotKey.Duration)
+                );
             });
         }
     }

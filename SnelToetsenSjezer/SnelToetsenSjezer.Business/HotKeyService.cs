@@ -1,5 +1,4 @@
-﻿using SnelToetsenSjezer.Domain.Enums;
-using SnelToetsenSjezer.Domain.Interfaces;
+﻿using SnelToetsenSjezer.Domain.Interfaces;
 using SnelToetsenSjezer.Domain.Models;
 using SnelToetsenSjezer.Domain.Types;
 using System.Xml;
@@ -25,34 +24,19 @@ namespace SnelToetsenSjezer.Business
                 {
                     HotKeySolutionStep newSolutionStep = new HotKeySolutionStep();
                     bool isString = solutionStrStep.Contains("'");
-                    bool isCombination = solutionStrStep.Contains("+");
+                    bool isKeyCombo = solutionStrStep.Contains("+");
 
                     if (isString)
                     {
-                        newSolutionStep.Add(new SolutionStepPart()
-                        {
-                            Type = SolutionStepPartType.String,
-                            Value = solutionStrStep.Substring(1, solutionStrStep.Length - 2)
-                        });
+                        newSolutionStep = new HotKeySolutionStep_String(solutionStrStep);
                     }
-                    else if (isCombination)
+                    else if (isKeyCombo)
                     {
-                        solutionStrStep.Split("+").ToList().ForEach(solutionStrStepPart =>
-                        {
-                            newSolutionStep.Add(new SolutionStepPart()
-                            {
-                                Type = SolutionStepPartType.Key,
-                                Value = solutionStrStepPart
-                            });
-                        });
+                        newSolutionStep = new HotKeySolutionStep_KeyCombo(solutionStrStep.Split("+").ToList());
                     }
                     else
                     {
-                        newSolutionStep.Add(new SolutionStepPart()
-                        {
-                            Type = SolutionStepPartType.Key,
-                            Value = solutionStrStep
-                        });
+                        newSolutionStep = new HotKeySolutionStep_Key(solutionStrStep);
                     }
 
                     newSolution.Add(newSolutionStep);

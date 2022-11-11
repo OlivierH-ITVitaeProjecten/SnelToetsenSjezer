@@ -5,23 +5,22 @@ namespace SnelToetsenSjezer.WinForms.Forms
 {
     public partial class GameForm : Form
     {
-        public static IHotKeyGameService? MyHotKeyGameService = null;
+        public static IHotKeyGameService? HotKeyGameService = null;
+        public static bool DealingWithStringInput = false;
 
         public GameForm(IHotKeyGameService gameService)
         {
             InitializeComponent();
 
-            MyHotKeyGameService = gameService;
-            MyHotKeyGameService.SetGameStateUpdatedCallback(UpdateForm);
-            MyHotKeyGameService.SetGameTimerCallback(UpdateTimer);
-
-            MyHotKeyGameService.StartGame();
+            HotKeyGameService = gameService;
+            HotKeyGameService.SetGameStateUpdatedCallback(UpdateForm);
+            HotKeyGameService.SetGameTimerCallback(UpdateTimer);
+            HotKeyGameService.StartGame();
         }
 
-        public void UpdateTimer(int seconds, bool paused)
+        public void UpdateTimer(int gameTicks, bool paused)
         {
-            TimeSpan time = TimeSpan.FromSeconds(seconds);
-            lbl_timer.Text = time.ToString((seconds > 3600) ? @"hh\:mm\:ss" : @"mm\:ss");
+            lbl_timer.Text = HotKeyGameService!.GameTicksToTimeStr(gameTicks);
             lbl_timer.ForeColor = paused ? Color.Gray : Color.Black;
         }
 
@@ -49,7 +48,7 @@ namespace SnelToetsenSjezer.WinForms.Forms
                 case "finished":
                     lbl_description_val.Text = "Finished!!!\n(should jump to gameover screen/form)";
 
-                    Form myGameOverForm = new GameOverForm(MyHotKeyGameService!);
+                    Form myGameOverForm = new GameOverForm(HotKeyGameService!);
                     myGameOverForm.Show();
                     this.Close();
                     break;
@@ -58,27 +57,57 @@ namespace SnelToetsenSjezer.WinForms.Forms
             {
                 lbl_userinputsteps_val.Text = stateDetails["userinputsteps"];
             }
+            if (stateDetails.ContainsKey("expecting_string"))
+            {
+                if (stateDetails["expecting_string"] == "1")
+                {
+                    if (!DealingWithStringInput)
+                    {
+                        DealingWithStringInput = txt_string_input.Enabled = true;
+                        txt_string_input.Focus();
+                    }
+                }
+                else
+                {
+                    if (DealingWithStringInput)
+                    {
+                        txt_string_input.Text = "";
+                        DealingWithStringInput = txt_string_input.Enabled = false;
+                        this.Focus();
+                    }
+                }
+            }
         }
 
         public void GameForm_KeyDown(object sender, KeyEventArgs e)
         {
-            MyHotKeyGameService!.KeyDown(e.KeyCode.ToString());
+            HotKeyGameService!.KeyDown(e.KeyCode.ToString());
         }
 
         public void GameForm_KeyUp(object sender, KeyEventArgs e)
         {
-            MyHotKeyGameService!.KeyUp(e.KeyCode.ToString());
+            HotKeyGameService!.KeyUp(e.KeyCode.ToString());
         }
 
         public void GameForm_FormClosing(Object sender, FormClosingEventArgs e)
         {
-            // below is a workaround for 'e.CloseReason == CloseReason.UserClosing' not working as advertised..
-            bool closedByCode = new StackTrace().GetFrames().Any(x => x.GetMethod().Name == "Close");
+            // Workaround for 'e.CloseReason == CloseReason.UserClosing' not working as advertised
+            bool closedByUser = !new StackTrace().GetFrames().Any(
+                x => x.GetMethod()!.Name == "Close"
+            );
 
-            if (!closedByCode)
+            if (closedByUser)
             {
                 Debug.WriteLine("User closed GameForm! force-stopping the game!");
-                MyHotKeyGameService!.StopGame(true);
+                HotKeyGameService!.StopGame(true);
+            }
+        }
+
+        private void txt_string_input_TextChanged(object sender, EventArgs e)
+        {
+            if (DealingWithStringInput)
+            {
+                HotKeyGameService!.StringInput(txt_string_input.Text);
             }
         }
     }

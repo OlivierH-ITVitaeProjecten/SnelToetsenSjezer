@@ -1,5 +1,4 @@
-﻿using SnelToetsenSjezer.Domain.Enums;
-using SnelToetsenSjezer.Domain.Interfaces;
+﻿using SnelToetsenSjezer.Domain.Interfaces;
 using SnelToetsenSjezer.Domain.Models;
 using SnelToetsenSjezer.Domain.Types;
 using System.Diagnostics;
@@ -16,13 +15,13 @@ namespace SnelToetsenSjezer.Business
         private Action<int, bool> gameTimerCallback = null;
 
         private static Timer? _gameTimer = null;
-        private static int _gameSeconds = 0;
+        private static int _gameTicks = 0;
 
         private static bool _isPaused = false;
-        private static int _pauseDurationDefault = 2;
+        private static int _pauseDurationDefault = 200;
         private static int _pauseDuration = 0;
 
-        private List<List<string>> _userInputSteps = new List<List<string>>();
+        private List<string> _userInputSteps = new List<string>();
 
         private int _currHotKey = 0;
         private bool _dealingWithFails = false;
@@ -49,9 +48,9 @@ namespace SnelToetsenSjezer.Business
         {
             Debug.WriteLine("Starting game!");
             if (_gameTimer != null) _gameTimer.Dispose();
-            _gameSeconds = 0;
+            _gameTicks = 0;
             _gameTimer = new Timer();
-            _gameTimer.Interval = 1000;
+            _gameTimer.Interval = 10; // 10 = centiseconds | 100 = deciseconds | 1000 = seconds
             _gameTimer.Tick += new EventHandler(GameTimer_Tick);
             _gameTimer.Start();
 
@@ -63,6 +62,11 @@ namespace SnelToetsenSjezer.Business
                 { "description", _gameHotKeys[_currHotKey].Description }
             };
 
+            if (IsExpectingString())
+            {
+                Debug.WriteLine(" >>> is expecting string!");
+                stateData.Add("expecting_string", "1");
+            }
             gameStateUpdatedCallback("playing", stateData);
         }
         public void StopGame(bool forceStop = false)
@@ -72,7 +76,7 @@ namespace SnelToetsenSjezer.Business
 
             _currHotKey = 0;
             _dealingWithFails = false;
-            _userInputSteps = new List<List<string>>();
+            _userInputSteps = new List<string>();
 
             if (!forceStop) gameStateUpdatedCallback("finished", new GameStateCallbackData());
         }
@@ -95,8 +99,8 @@ namespace SnelToetsenSjezer.Business
         {
             if (!_isPaused)
             {
-                _gameSeconds++;
-                _gameHotKeys[_currHotKey].Seconds++;
+                _gameTicks++;
+                _gameHotKeys[_currHotKey].Duration++;
             }
             else
             {
@@ -109,7 +113,22 @@ namespace SnelToetsenSjezer.Business
                     ResumeGame();
                 }
             }
-            gameTimerCallback(_gameSeconds, _isPaused);
+            gameTimerCallback(_gameTicks, _isPaused);
+        }
+        public string GameTicksToTimeStr()
+        {
+            return GameTicksToTimeStr(_gameTicks);
+        }
+        public string GameTicksToTimeStr(int gameTicks)
+        {
+            int seconds = gameTicks / 50; // Delen door 100 is te traag??? hoe dan???
+            TimeSpan time = TimeSpan.FromSeconds(seconds);
+            string timeStr = time.ToString((seconds > 3600) ? @"hh\:mm\:ss" : @"mm\:ss");
+
+            int centiseconds = (gameTicks % 100);
+            string centiStr = $"{centiseconds}".Length < 2 ? "0" + centiseconds : $"{centiseconds}";
+
+            return timeStr + "." + centiStr;
         }
 
         public void KeyDown(string keyName)
@@ -126,66 +145,73 @@ namespace SnelToetsenSjezer.Business
         }
         public void KeyUp(string keyName)
         {
-            if (!_isPaused && _currentlyPressedKeys.ContainsKey(keyName))
+            if (!_isPaused && (_currentlyPressedKeys.ContainsKey(keyName) || keyName == "F12"))
             {
                 Debug.WriteLine("KeyUp: " + keyName);
                 Debug.WriteLine("- _currentlyPressedKeys.Keys: " + String.Join("+", _currentlyPressedKeys.Keys));
 
-                bool dontAdd = false;
-                int containsKeyCount = 0;
-                if (_userInputSteps.Count() > 0)
-                {
-                    List<string> previousStep = _userInputSteps[_userInputSteps.Count() - 1];
-                    Debug.WriteLine("- previousStep: " + String.Join(",", previousStep));
-
-                    _currentlyPressedKeys.Keys.ToList().ForEach(key =>
-                    {
-                        if (previousStep.Contains(key) && previousStep.Count() > 1) containsKeyCount++;
-                    });
-                    if (containsKeyCount == _currentlyPressedKeys.Keys.Count()) dontAdd = true;
-                }
-                if (!dontAdd) _userInputSteps.Add(_currentlyPressedKeys.Keys.ToList());
+                _userInputSteps.Add(String.Join("+", _currentlyPressedKeys.Keys.ToList()));
                 _currentlyPressedKeys.Remove(keyName);
 
+                // edge-case voor Nvidia GeForce Experience software die bij Alt+F12
+                // het F12 keyDown event niet door blijkt te geven
+                if (_userInputSteps.Count() == 1 && _userInputSteps[0] == "Menu" && keyName == "F12")
+                {
+                    Debug.WriteLine("!!! Nvidia Geforce Experience edge-case is in effect !!!");
+                    _userInputSteps[0] = "Menu+F12";
+                }
+
                 CheckForProgressOrFail();
+            }
+        }
+        public void StringInput(string input)
+        {
+            if (IsExpectingString())
+            {
+                HotKeySolution solution = _gameHotKeys[_currHotKey].Solutions[0];
+                string expectedInput = solution[solution.correctSteps].ToString();
+
+                Debug.WriteLine($"StringInput - input: {input} | expectedInput: {expectedInput}");
+
+                if ($"'{input}'" == expectedInput)
+                {
+                    Debug.WriteLine("strings match!!");
+                    _userInputSteps.Add($"'{input}'");
+                    gameStateUpdatedCallback("userinputsteps", new GameStateCallbackData() {
+                        { "userinputsteps", GetUserInputSteps(true) },
+                        { "expecting_string", "0" }
+                    });
+
+                    CheckForProgressOrFail();
+                }
             }
         }
 
         public string GetUserInputSteps(bool includeCurrentlyPressed = false)
         {
-            string usrInputSteps = "";
+            string inputSteps = "";
             _userInputSteps.ToList().ForEach(step =>
             {
-                string stepStr = "";
-                step.ToList().ForEach(sub_step =>
-                {
-                    stepStr += stepStr.Length > 0 ? "+" + sub_step : sub_step;
-                });
-                usrInputSteps += usrInputSteps.Length > 0 ? "," + stepStr : stepStr;
+                inputSteps += inputSteps.Length > 0 ? "," + step : step;
             });
             if (includeCurrentlyPressed)
             {
                 string currentlyPressed = String.Join("+", _currentlyPressedKeys.Keys);
-                usrInputSteps += usrInputSteps.Length > 0 ? "," + currentlyPressed : currentlyPressed;
+                inputSteps += inputSteps.Length > 0 ? "," + currentlyPressed : currentlyPressed;
             }
 
-            return usrInputSteps;
+            return inputSteps;
         }
 
         public bool IsExpectingString()
         {
             bool isExpectingString = false;
-
             HotKeySolutions currHotKeySolutions = _gameHotKeys[_currHotKey].Solutions;
+
             if (currHotKeySolutions.Count() == 1)
             {
                 HotKeySolution solution = _gameHotKeys[_currHotKey].Solutions[0];
-                HotKeySolutionStep firstStep = solution[0];
-                SolutionStepPart firstStepPart = firstStep[0];
-                if (firstStepPart.Type == SolutionStepPartType.String)
-                {
-                    isExpectingString = true;
-                }
+                isExpectingString = solution.IsNextStepAString();
             }
 
             return isExpectingString;
@@ -195,69 +221,57 @@ namespace SnelToetsenSjezer.Business
         {
             Debug.WriteLine("- _userInputSteps: " + GetUserInputSteps());
 
-            HotKey myHotKey = _gameHotKeys[_currHotKey];
-            HotKeySolutions hotKeySolutions = myHotKey.Solutions;
+            HotKeySolutions currHotKeySolutions = _gameHotKeys[_currHotKey].Solutions;
 
-            bool hasAnyMatches = false;
-            bool failedString = false;
-            int solutionsShorterThenInput = 0;
+            int failedSolutions = 0;
 
-            hotKeySolutions.ForEach(hkSolution =>
+            currHotKeySolutions.ForEach(solution =>
             {
-                int hkSolutionStepIndex = 0;
-                double matchingSteps = 0;
-                bool partialStringMatch = false;
+                int completedSteps = 0;
+                bool failedSolution = false;
+                int solutionStepIndex = 0;
 
-                hkSolution.ForEach(hkSolutionStep =>
+                solution.ForEach(solutionStep =>
                 {
-                    if (hkSolutionStepIndex <= _userInputSteps.Count() - 1)
+                    if (solutionStepIndex <= _userInputSteps.Count() - 1)
                     {
-                        List<string> hkSolutionStepStrings = new List<string>();
-
-                        hkSolutionStep.ForEach(stepPart =>
+                        if (solutionStep.CheckForCompletion(_userInputSteps[solutionStepIndex]))
                         {
-                            string stepPartValue = stepPart.ToString();
-                            hkSolutionStepStrings.Add(stepPartValue);
-                        });
-                        Debug.WriteLine(" > hkSolutionStepStrings: " + string.Join(",", hkSolutionStepStrings));
-                        Debug.WriteLine(" > _userInputSteps[hkSolutionStepIndex]: " + string.Join(",", _userInputSteps[hkSolutionStepIndex]));
-
-                        if (hkSolutionStepStrings.SequenceEqual(_userInputSteps[hkSolutionStepIndex]))
+                            Debug.WriteLine(">>> userInputStep is complete!");
+                            completedSteps++;
+                            solution.correctSteps = completedSteps;
+                        }
+                        else if (solutionStep.CheckForFail(_userInputSteps[solutionStepIndex]))
                         {
-                            Debug.WriteLine(" > Sequence match!");
-                            hasAnyMatches = true;
-                            matchingSteps++;
+                            Debug.WriteLine(">>> userInputStep is failed!");
+                            failedSolution = true;
                         }
                     }
-                    hkSolutionStepIndex++;
+                    solutionStepIndex++;
                 });
-                if (matchingSteps == hkSolution.Count())
+
+                if (solution.IsNextStepAString())
+                {
+                    _currentlyPressedKeys = new PressedKeysDict();
+                    GameStateCallbackData stateData = new GameStateCallbackData()
+                    {
+                        { "expecting_string", "1" }
+                    };
+                    gameStateUpdatedCallback("userinputsteps", stateData);
+                }
+
+                if (completedSteps == solution.Count())
                 {
                     HotKeyIsCorrect();
                 }
-
-                // if these dont match then fail? but what about other solutions??
-                Debug.WriteLine("matchingSteps: " + matchingSteps);
-                Debug.WriteLine("_userInputSteps.Count(): " + _userInputSteps.Count());
-                if (_userInputSteps.Count() > matchingSteps && !partialStringMatch)
+                if (failedSolution)
                 {
-                    solutionsShorterThenInput++;
+                    solution.correctSteps = 0;
+                    failedSolutions++;
                 }
             });
-
-            if (!hasAnyMatches)
+            if (failedSolutions == currHotKeySolutions.Count())
             {
-                Debug.WriteLine("No matches at all, fail!");
-                HotKeyIsFailed();
-            }
-            else if (failedString)
-            {
-                Debug.WriteLine("Failed a string input, fail!");
-                HotKeyIsFailed();
-            }
-            else if (solutionsShorterThenInput == hotKeySolutions.Count())
-            {
-                Debug.WriteLine("All solutions are shorter then the recieved input, fail!");
                 HotKeyIsFailed();
             }
         }
@@ -293,7 +307,7 @@ namespace SnelToetsenSjezer.Business
 
         public void NextHotKey()
         {
-            _userInputSteps = new List<List<string>>();
+            _userInputSteps = new List<string>();
             _currentlyPressedKeys = new PressedKeysDict();
             bool finished = false;
 
@@ -335,6 +349,17 @@ namespace SnelToetsenSjezer.Business
                     { "description", _gameHotKeys[_currHotKey].Description },
                     { "userinputsteps", "" }
                 };
+
+                if (IsExpectingString())
+                {
+                    Debug.WriteLine(" >>> is expecting string!");
+                    stateData.Add("expecting_string", "1");
+                }
+                else
+                {
+                    stateData.Add("expecting_string", "0");
+                }
+
                 gameStateUpdatedCallback("playing", stateData);
             }
         }
@@ -344,7 +369,7 @@ namespace SnelToetsenSjezer.Business
         }
         public int GetGameDuration()
         {
-            return _gameSeconds;
+            return _gameTicks;
         }
     }
 }

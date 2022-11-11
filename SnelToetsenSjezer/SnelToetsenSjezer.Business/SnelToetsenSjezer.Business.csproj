@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="OldHotKeyGameService.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\SnelToetsenSjezer.Domain\SnelToetsenSjezer.Domain.csproj" />
   </ItemGroup>
 

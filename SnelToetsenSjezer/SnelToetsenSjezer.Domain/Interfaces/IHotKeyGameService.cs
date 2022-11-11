@@ -13,8 +13,11 @@ namespace SnelToetsenSjezer.Domain.Interfaces
         void PauseGame();
         void ResumeGame();
         void GameTimer_Tick(object sender, EventArgs e);
+        string GameTicksToTimeStr();
+        string GameTicksToTimeStr(int gameTicks);
         void KeyDown(string keyName);
         void KeyUp(string keyName);
+        void StringInput(string input);
         void CheckForProgressOrFail();
         void HotKeyIsCorrect();
         void HotKeyIsFailed();

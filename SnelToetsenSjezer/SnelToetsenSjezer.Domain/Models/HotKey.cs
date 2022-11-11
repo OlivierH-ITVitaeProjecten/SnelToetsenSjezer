@@ -6,7 +6,7 @@ namespace SnelToetsenSjezer.Domain.Models
     {
         public bool Failed { get; set; }
         public int Attempt { get; set; } = 1;
-        public int Seconds { get; set; }
+        public int Duration { get; set; }
         public string Category { get; set; }
         public string Description { get; set; }
         public HotKeySolutions Solutions { get; set; }
@@ -15,7 +15,12 @@ namespace SnelToetsenSjezer.Domain.Models
         {
             Failed = false;
             Attempt = 1;
-            Seconds = 0;
+            Duration = 0;
+
+            Solutions.ForEach(s =>
+            {
+                s.correctSteps = 0;
+            });
         }
     }
 }
