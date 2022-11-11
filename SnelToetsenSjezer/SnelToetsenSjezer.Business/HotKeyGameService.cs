@@ -27,6 +27,24 @@ namespace SnelToetsenSjezer.Business
         private int _currHotKey = 0;
         private bool _dealingWithFails = false;
 
+        public static readonly Dictionary<string, string> userFriendlyKeyNames = new()
+        {
+            ["D0"] = "0",
+            ["D1"] = "1",
+            ["Next"] = "PageDown",
+            ["Oem1"] = ";",
+            ["Oem4"] = "[",
+            ["Oem5"] = "\\",
+            ["Oemcomma"] = ",",
+            ["OemMinus"] = "-",
+            ["OemOpenBrackets"] = "[",
+            ["OemPeriod"] = ".",
+            ["OemQuestion"] = "/",
+            ["Back"] = "Backspace",
+            ["ControlKey"] = "Ctrl",
+            ["Menu"] = "Alt"
+        };
+
         public void SetHotKeys(List<HotKey> hotKeys)
         {
             hotKeys.ForEach(hotKey =>
@@ -43,6 +61,12 @@ namespace SnelToetsenSjezer.Business
         public void SetGameTimerCallback(Action<int, bool> callback)
         {
             gameTimerCallback = callback;
+        }
+
+        public string ConvertToHumanReadableKeynames(string keyString)
+        {
+            return userFriendlyKeyNames.Aggregate(keyString, (current, value) =>
+                current.Replace(value.Key, value.Value));
         }
 
         public void StartGame()
@@ -200,7 +224,7 @@ namespace SnelToetsenSjezer.Business
                 inputSteps += inputSteps.Length > 0 ? "," + currentlyPressed : currentlyPressed;
             }
 
-            return inputSteps;
+            return ConvertToHumanReadableKeynames(inputSteps);
         }
 
         public bool IsExpectingString()
@@ -306,7 +330,7 @@ namespace SnelToetsenSjezer.Business
 
             GameStateCallbackData stateData = new GameStateCallbackData()
             {
-                { "solution", hotKeySolutionStr },
+                { "solution", ConvertToHumanReadableKeynames(hotKeySolutionStr) },
                 { "userinputsteps", GetUserInputSteps() }
             };
             gameStateUpdatedCallback("failed", stateData);
