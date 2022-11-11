@@ -64,7 +64,7 @@ namespace SnelToetsenSjezer.Business
 
             if (IsExpectingString())
             {
-                Debug.WriteLine(" >>> is expecting string!");
+                Debug.WriteLine("Telling GameForm that we expect a string!");
                 stateData.Add("expecting_string", "1");
             }
             gameStateUpdatedCallback("playing", stateData);
@@ -175,7 +175,6 @@ namespace SnelToetsenSjezer.Business
 
                 if ($"'{input}'" == expectedInput)
                 {
-                    Debug.WriteLine("strings match!!");
                     _userInputSteps.Add($"'{input}'");
                     gameStateUpdatedCallback("userinputsteps", new GameStateCallbackData() {
                         { "userinputsteps", GetUserInputSteps(true) },
@@ -237,13 +236,11 @@ namespace SnelToetsenSjezer.Business
                     {
                         if (solutionStep.CheckForCompletion(_userInputSteps[solutionStepIndex]))
                         {
-                            Debug.WriteLine(">>> userInputStep is complete!");
                             completedSteps++;
                             solution.correctSteps = completedSteps;
                         }
                         else if (solutionStep.CheckForFail(_userInputSteps[solutionStepIndex]))
                         {
-                            Debug.WriteLine(">>> userInputStep is failed!");
                             failedSolution = true;
                         }
                     }
@@ -352,7 +349,7 @@ namespace SnelToetsenSjezer.Business
 
                 if (IsExpectingString())
                 {
-                    Debug.WriteLine(" >>> is expecting string!");
+                    Debug.WriteLine("Telling GameForm that we expect a string!");
                     stateData.Add("expecting_string", "1");
                 }
                 else

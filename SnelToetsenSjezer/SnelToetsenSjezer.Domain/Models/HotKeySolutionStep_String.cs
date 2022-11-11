@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-
-namespace SnelToetsenSjezer.Domain.Models
+﻿namespace SnelToetsenSjezer.Domain.Models
 {
     public class HotKeySolutionStep_String : HotKeySolutionStep
     {
@@ -11,8 +9,6 @@ namespace SnelToetsenSjezer.Domain.Models
         }
         public override bool CheckForCompletion(string input)
         {
-            Debug.WriteLine("Checking for completion");
-            Debug.WriteLine($" - input: {input} | expected: {ExpectedInput}");
             if (input == ExpectedInput) return true;
             return false;
         }
