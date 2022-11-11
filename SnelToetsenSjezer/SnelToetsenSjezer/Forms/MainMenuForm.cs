@@ -36,6 +36,8 @@ namespace SnelToetsenSjezer
             num_howmanyquestions.Maximum = initialMaxHotKeys;
 
             num_howmanyquestions.Value = num_howmanyquestions.Maximum; // temp
+
+            cmbbox_continue.SelectedIndex = 0;
         }
 
         public void HandleCategoryChanges()
@@ -76,7 +78,10 @@ namespace SnelToetsenSjezer
                 (int)Math.Round(num_howmanyquestions.Value),
                 HotKeysInSelectedCategories
             );
-            MyHotKeyGameService!.ConfigureGame(randomHotKeys, !chkbox_returncontinue.Checked);
+            bool auto = (cmbbox_continue.SelectedIndex == 0 || cmbbox_continue.SelectedIndex == 2);
+            bool key = (cmbbox_continue.SelectedIndex == 1 || cmbbox_continue.SelectedIndex == 2);
+
+            MyHotKeyGameService!.ConfigureGame(randomHotKeys, auto, key);
 
             Form myGameForm = new GameForm(MyHotKeyGameService);
             myGameForm.Show();

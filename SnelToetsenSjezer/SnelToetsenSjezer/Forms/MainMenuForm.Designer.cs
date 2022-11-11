@@ -33,14 +33,15 @@
             this.lb_categories = new System.Windows.Forms.CheckedListBox();
             this.lbl_howmanyquestions = new System.Windows.Forms.Label();
             this.num_howmanyquestions = new System.Windows.Forms.NumericUpDown();
-            this.chkbox_returncontinue = new System.Windows.Forms.CheckBox();
+            this.cmbbox_continue = new System.Windows.Forms.ComboBox();
+            this.label2 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.num_howmanyquestions)).BeginInit();
             this.SuspendLayout();
             // 
             // btn_startgame
             // 
             this.btn_startgame.Font = new System.Drawing.Font("Segoe UI", 16.30189F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.btn_startgame.Location = new System.Drawing.Point(12, 312);
+            this.btn_startgame.Location = new System.Drawing.Point(12, 382);
             this.btn_startgame.Name = "btn_startgame";
             this.btn_startgame.Size = new System.Drawing.Size(560, 70);
             this.btn_startgame.TabIndex = 0;
@@ -91,22 +92,35 @@
             0});
             this.num_howmanyquestions.ValueChanged += new System.EventHandler(this.HowManyQuestions_ValueChanged);
             // 
-            // chkbox_returncontinue
+            // cmbbox_continue
             // 
-            this.chkbox_returncontinue.AutoSize = true;
-            this.chkbox_returncontinue.Location = new System.Drawing.Point(403, 275);
-            this.chkbox_returncontinue.Name = "chkbox_returncontinue";
-            this.chkbox_returncontinue.Size = new System.Drawing.Size(169, 21);
-            this.chkbox_returncontinue.TabIndex = 6;
-            this.chkbox_returncontinue.Text = "Press Return to continue";
-            this.chkbox_returncontinue.UseVisualStyleBackColor = true;
+            this.cmbbox_continue.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbbox_continue.FormattingEnabled = true;
+            this.cmbbox_continue.Items.AddRange(new object[] {
+            "Automatically",
+            "When i press Return",
+            "Automatically -OR- when i press Return"});
+            this.cmbbox_continue.Location = new System.Drawing.Point(210, 304);
+            this.cmbbox_continue.Name = "cmbbox_continue";
+            this.cmbbox_continue.Size = new System.Drawing.Size(362, 25);
+            this.cmbbox_continue.TabIndex = 7;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(12, 307);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(154, 17);
+            this.label2.TabIndex = 8;
+            this.label2.Text = "Continue to next / results";
             // 
             // MainMenuForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(584, 395);
-            this.Controls.Add(this.chkbox_returncontinue);
+            this.ClientSize = new System.Drawing.Size(584, 466);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.cmbbox_continue);
             this.Controls.Add(this.num_howmanyquestions);
             this.Controls.Add(this.lbl_howmanyquestions);
             this.Controls.Add(this.lb_categories);
@@ -127,6 +141,7 @@
         private CheckedListBox lb_categories;
         private Label lbl_howmanyquestions;
         private NumericUpDown num_howmanyquestions;
-        private CheckBox chkbox_returncontinue;
+        private ComboBox cmbbox_continue;
+        private Label label2;
     }
 }

@@ -26,6 +26,9 @@ namespace SnelToetsenSjezer.WinForms.Forms
 
         public void UpdateForm(string basicState, Dictionary<string, string> stateDetails)
         {
+            bool autoResume = HotKeyGameService!.GetAutoResume();
+            bool keyResume = HotKeyGameService!.GetKeyResume();
+
             switch (basicState)
             {
                 case "playing":
@@ -42,23 +45,36 @@ namespace SnelToetsenSjezer.WinForms.Forms
                     string correctDescription = "Correct!\n";
                     if (stateDetails.ContainsKey("game_completed"))
                     {
-                        correctDescription += "This was the last question";
-                        correctDescription += (HotKeyGameService!.GetAutoResume())
-                            ? "\nOpening results..."
-                            : "\nPress Return to open results";
+                        correctDescription += "This was the last question!\n";
+                        if (autoResume && !keyResume)
+                            correctDescription += "Opening results...";
+                        if (!autoResume && keyResume)
+                            correctDescription += "Press Return to open results";
+                        if (autoResume && keyResume)
+                            correctDescription += "Wait or press Return to open results";
                     }
                     else
                     {
-                        correctDescription += (HotKeyGameService!.GetAutoResume())
-                            ? "Get ready for the next question!"
-                            : "Press Return to continue";
+                        if (autoResume && !keyResume)
+                            correctDescription += "Get ready for the next question!";
+                        if (!autoResume && keyResume)
+                            correctDescription += "Press Return to continue!";
+                        if (autoResume && keyResume)
+                            correctDescription += "Wait or Press Return to continue!";
                     }
                     lbl_description_val.Text = correctDescription;
                     break;
                 case "failed":
                     string failedDescription = "Failed!\n" +
-                        "The correct answer is: " + stateDetails["solution"];
-                    failedDescription += "\nPress Return to continue";
+                        "The correct answer is: " + stateDetails["solution"] + "\n";
+
+                    if (autoResume && !keyResume)
+                        failedDescription += "Get ready for the next question!";
+                    if (!autoResume && keyResume)
+                        failedDescription += "Press Return to continue!";
+                    if (autoResume && keyResume)
+                        failedDescription += "Wait or Press Return to continue!";
+
                     lbl_description_val.Text = failedDescription;
 
                     break;

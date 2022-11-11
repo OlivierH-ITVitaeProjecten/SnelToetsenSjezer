@@ -18,7 +18,9 @@ namespace SnelToetsenSjezer.Business
         private static int _gameTicks = 0;
 
         private static bool _isPaused = false;
-        private static bool _autoResume = false; // waarom werkt dit niet kut C#
+        private static bool _autoResume = false;
+        private static bool _keyResume = false;
+
         private static int _pauseDurationCorrect = 100;
         private static int _pauseDurationFailed = 250;
         private static int _pauseDuration = 0;
@@ -60,8 +62,12 @@ namespace SnelToetsenSjezer.Business
         {
             return _autoResume;
         }
+        public bool GetKeyResume()
+        {
+            return _keyResume;
+        }
 
-        public void ConfigureGame(List<HotKey> hotKeys, bool autoResume)
+        public void ConfigureGame(List<HotKey> hotKeys, bool autoResume, bool keyResume)
         {
             hotKeys.ForEach(hotKey =>
             {
@@ -69,6 +75,7 @@ namespace SnelToetsenSjezer.Business
             });
             _gameHotKeys = hotKeys;
             _autoResume = autoResume;
+            _keyResume = keyResume;
         }
 
         public void SetGameStateUpdatedCallback(Action<string, GameStateCallbackData> callback)
@@ -208,7 +215,7 @@ namespace SnelToetsenSjezer.Business
 
                 CheckForProgressOrFail();
             }
-            if (_isPaused && !_autoResume && keyName == "Return") ResumeGame();
+            if (_isPaused && _keyResume && keyName == "Return") ResumeGame();
         }
         public void StringInput(string input)
         {
