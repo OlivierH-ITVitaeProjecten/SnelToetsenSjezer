@@ -42,17 +42,25 @@ namespace SnelToetsenSjezer.WinForms.Forms
                     string correctDescription = "Correct!\n";
                     if (stateDetails.ContainsKey("game_completed"))
                     {
-                        correctDescription += "This was the last question, opening results...";
+                        correctDescription += "This was the last question";
+                        correctDescription += (HotKeyGameService!.GetAutoResume())
+                            ? "\nOpening results..."
+                            : "\nPress Return to open results";
                     }
                     else
                     {
-                        correctDescription += "Get ready for the next question!";
+                        correctDescription += (HotKeyGameService!.GetAutoResume())
+                            ? "Get ready for the next question!"
+                            : "Press Return to continue";
                     }
                     lbl_description_val.Text = correctDescription;
                     break;
                 case "failed":
-                    lbl_description_val.Text = "Failed!\n" +
+                    string failedDescription = "Failed!\n" +
                         "The correct answer is: " + stateDetails["solution"];
+                    failedDescription += "\nPress Return to continue";
+                    lbl_description_val.Text = failedDescription;
+
                     break;
                 case "finished":
                     lbl_description_val.Text = "Finished!!!\n(should jump to gameover screen/form)";

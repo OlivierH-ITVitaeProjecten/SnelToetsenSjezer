@@ -76,7 +76,7 @@ namespace SnelToetsenSjezer
                 (int)Math.Round(num_howmanyquestions.Value),
                 HotKeysInSelectedCategories
             );
-            MyHotKeyGameService!.SetHotKeys(randomHotKeys);
+            MyHotKeyGameService!.ConfigureGame(randomHotKeys, !chkbox_returncontinue.Checked);
 
             Form myGameForm = new GameForm(MyHotKeyGameService);
             myGameForm.Show();

@@ -18,6 +18,7 @@ namespace SnelToetsenSjezer.Business
         private static int _gameTicks = 0;
 
         private static bool _isPaused = false;
+        private static bool _autoResume = false; // waarom werkt dit niet kut C#
         private static int _pauseDurationCorrect = 100;
         private static int _pauseDurationFailed = 250;
         private static int _pauseDuration = 0;
@@ -27,10 +28,19 @@ namespace SnelToetsenSjezer.Business
         private int _currHotKey = 0;
         private bool _dealingWithFails = false;
 
+
         public static readonly Dictionary<string, string> userFriendlyKeyNames = new()
         {
             ["D0"] = "0",
             ["D1"] = "1",
+            ["D2"] = "2",
+            ["D3"] = "3",
+            ["D4"] = "4",
+            ["D5"] = "5",
+            ["D6"] = "6",
+            ["D7"] = "7",
+            ["D8"] = "8",
+            ["D9"] = "9",
             ["Next"] = "PageDown",
             ["Oem1"] = ";",
             ["Oem4"] = "[",
@@ -42,16 +52,23 @@ namespace SnelToetsenSjezer.Business
             ["OemQuestion"] = "/",
             ["Back"] = "Backspace",
             ["ControlKey"] = "Ctrl",
-            ["Menu"] = "Alt"
+            ["Menu"] = "Alt",
+            ["ShiftKey"] = "Shift"
         };
 
-        public void SetHotKeys(List<HotKey> hotKeys)
+        public bool GetAutoResume()
+        {
+            return _autoResume;
+        }
+
+        public void ConfigureGame(List<HotKey> hotKeys, bool autoResume)
         {
             hotKeys.ForEach(hotKey =>
             {
                 hotKey.ResetForNewGame();
             });
             _gameHotKeys = hotKeys;
+            _autoResume = autoResume;
         }
 
         public void SetGameStateUpdatedCallback(Action<string, GameStateCallbackData> callback)
@@ -129,13 +146,16 @@ namespace SnelToetsenSjezer.Business
             }
             else
             {
-                if (_pauseDuration > 0)
+                if (_autoResume)
                 {
-                    _pauseDuration--;
-                }
-                else
-                {
-                    ResumeGame();
+                    if (_pauseDuration > 0)
+                    {
+                        _pauseDuration--;
+                    }
+                    else
+                    {
+                        ResumeGame();
+                    }
                 }
             }
             gameTimerCallback(_gameTicks, _isPaused);
@@ -188,6 +208,7 @@ namespace SnelToetsenSjezer.Business
 
                 CheckForProgressOrFail();
             }
+            if (_isPaused && !_autoResume && keyName == "Return") ResumeGame();
         }
         public void StringInput(string input)
         {

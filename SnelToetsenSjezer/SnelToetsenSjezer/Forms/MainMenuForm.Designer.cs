@@ -33,15 +33,16 @@
             this.lb_categories = new System.Windows.Forms.CheckedListBox();
             this.lbl_howmanyquestions = new System.Windows.Forms.Label();
             this.num_howmanyquestions = new System.Windows.Forms.NumericUpDown();
+            this.chkbox_returncontinue = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.num_howmanyquestions)).BeginInit();
             this.SuspendLayout();
             // 
             // btn_startgame
             // 
             this.btn_startgame.Font = new System.Drawing.Font("Segoe UI", 16.30189F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.btn_startgame.Location = new System.Drawing.Point(12, 287);
+            this.btn_startgame.Location = new System.Drawing.Point(12, 312);
             this.btn_startgame.Name = "btn_startgame";
-            this.btn_startgame.Size = new System.Drawing.Size(560, 62);
+            this.btn_startgame.Size = new System.Drawing.Size(560, 70);
             this.btn_startgame.TabIndex = 0;
             this.btn_startgame.Text = "Start!";
             this.btn_startgame.UseVisualStyleBackColor = true;
@@ -50,9 +51,9 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 9);
+            this.label1.Location = new System.Drawing.Point(12, 10);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(511, 15);
+            this.label1.Size = new System.Drawing.Size(564, 17);
             this.label1.TabIndex = 1;
             this.label1.Text = "Pick one or multiple categories and choose how many questions you want, then star" +
     "t the game!";
@@ -61,27 +62,27 @@
             // 
             this.lb_categories.CheckOnClick = true;
             this.lb_categories.FormattingEnabled = true;
-            this.lb_categories.Location = new System.Drawing.Point(12, 32);
+            this.lb_categories.Location = new System.Drawing.Point(12, 36);
             this.lb_categories.Name = "lb_categories";
-            this.lb_categories.Size = new System.Drawing.Size(560, 202);
+            this.lb_categories.Size = new System.Drawing.Size(560, 224);
             this.lb_categories.TabIndex = 2;
             this.lb_categories.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.CategoriesItemCheckedChanged);
             this.lb_categories.SelectedIndexChanged += new System.EventHandler(this.CategoriesSelectedIndexChanged);
             // 
             // lbl_howmanyquestions
             // 
-            this.lbl_howmanyquestions.Location = new System.Drawing.Point(12, 253);
+            this.lbl_howmanyquestions.Location = new System.Drawing.Point(12, 270);
             this.lbl_howmanyquestions.Name = "lbl_howmanyquestions";
-            this.lbl_howmanyquestions.Size = new System.Drawing.Size(210, 23);
+            this.lbl_howmanyquestions.Size = new System.Drawing.Size(192, 26);
             this.lbl_howmanyquestions.TabIndex = 3;
             this.lbl_howmanyquestions.Text = "How many questions? (1-1)";
             this.lbl_howmanyquestions.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // num_howmanyquestions
             // 
-            this.num_howmanyquestions.Location = new System.Drawing.Point(228, 256);
+            this.num_howmanyquestions.Location = new System.Drawing.Point(210, 273);
             this.num_howmanyquestions.Name = "num_howmanyquestions";
-            this.num_howmanyquestions.Size = new System.Drawing.Size(344, 23);
+            this.num_howmanyquestions.Size = new System.Drawing.Size(162, 25);
             this.num_howmanyquestions.TabIndex = 5;
             this.num_howmanyquestions.Value = new decimal(new int[] {
             1,
@@ -90,11 +91,22 @@
             0});
             this.num_howmanyquestions.ValueChanged += new System.EventHandler(this.HowManyQuestions_ValueChanged);
             // 
+            // chkbox_returncontinue
+            // 
+            this.chkbox_returncontinue.AutoSize = true;
+            this.chkbox_returncontinue.Location = new System.Drawing.Point(403, 275);
+            this.chkbox_returncontinue.Name = "chkbox_returncontinue";
+            this.chkbox_returncontinue.Size = new System.Drawing.Size(169, 21);
+            this.chkbox_returncontinue.TabIndex = 6;
+            this.chkbox_returncontinue.Text = "Press Return to continue";
+            this.chkbox_returncontinue.UseVisualStyleBackColor = true;
+            // 
             // MainMenuForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(584, 361);
+            this.ClientSize = new System.Drawing.Size(584, 395);
+            this.Controls.Add(this.chkbox_returncontinue);
             this.Controls.Add(this.num_howmanyquestions);
             this.Controls.Add(this.lbl_howmanyquestions);
             this.Controls.Add(this.lb_categories);
@@ -115,5 +127,6 @@
         private CheckedListBox lb_categories;
         private Label lbl_howmanyquestions;
         private NumericUpDown num_howmanyquestions;
+        private CheckBox chkbox_returncontinue;
     }
 }

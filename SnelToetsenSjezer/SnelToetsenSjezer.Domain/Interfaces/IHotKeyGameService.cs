@@ -5,7 +5,8 @@ namespace SnelToetsenSjezer.Domain.Interfaces
 {
     public interface IHotKeyGameService
     {
-        void SetHotKeys(List<HotKey> hotKeys);
+        bool GetAutoResume();
+        void ConfigureGame(List<HotKey> hotKeys, bool autoResume);
         void SetGameStateUpdatedCallback(Action<string, GameStateCallbackData> callback);
         void SetGameTimerCallback(Action<int, bool> callback);
         void StartGame();

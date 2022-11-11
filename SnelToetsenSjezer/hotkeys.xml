@@ -53,7 +53,7 @@
 		<hotkey description="Scroll tekst omlaag maar houd cursor op zelfde positie" keys="ControlKey+Up" />
 		<hotkey description="Scroll tekst omhoog
 				maar houd cursor op zelfde positie" keys="ControlKey+Down" />
-		<hotkey description="Maak een property" keys="P,R,O,P,Tab,Tab" />
+		<hotkey description="Maak een property" keys="'prop',Tab,Tab" />
 		<hotkey description="Ga naar de solution explorer" keys="ControlKey+Menu+L" />
 		<hotkey description="Zet een breakpoint" keys="F9" />
 		<hotkey description="Ga naar het error window" keys="ControlKey+Oem5,ControlKey+E||ControlKey+Oem5,E" />
@@ -81,12 +81,14 @@
 	</hotkey_group>
 	<hotkey_group name="String tests">
 		<hotkey description="'prop',Tab,Tab" keys="'prop',Tab,Tab" />
+		<!--
 		<hotkey description="Tab,'prop',Tab" keys="Tab,'prop',Tab" />
 		<hotkey description="Tab,Tab,'prop'" keys="Tab,Tab,'prop'" />
 		<hotkey description="'abc',ControlKey+Z" keys="'abc',ControlKey+Z" />
 		<hotkey description="ControlKey+Z,'abc'" keys="ControlKey+Z,'abc'" />
 		<hotkey description="Ctrl+A,'prop',Ctrl+B" keys="ControlKey+A,'prop',ControlKey+B" />
 		<hotkey description="'lorem','ipsum'" keys="'lorem','ipsum'" />
+		-->
 	</hotkey_group>
 	<hotkey_group name="test spul">
 		<hotkey description="NVIDIA Ding (Alt+F12)" keys="Menu+F12" />
