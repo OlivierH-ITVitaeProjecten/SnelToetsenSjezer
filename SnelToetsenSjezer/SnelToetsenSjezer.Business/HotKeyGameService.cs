@@ -18,7 +18,8 @@ namespace SnelToetsenSjezer.Business
         private static int _gameTicks = 0;
 
         private static bool _isPaused = false;
-        private static int _pauseDurationDefault = 200;
+        private static int _pauseDurationCorrect = 100;
+        private static int _pauseDurationFailed = 250;
         private static int _pauseDuration = 0;
 
         private List<string> _userInputSteps = new List<string>();
@@ -81,11 +82,11 @@ namespace SnelToetsenSjezer.Business
             if (!forceStop) gameStateUpdatedCallback("finished", new GameStateCallbackData());
         }
 
-        public void PauseGame()
+        public void PauseGame(int duration)
         {
             Debug.WriteLine("Pausing game!");
             _isPaused = true;
-            _pauseDuration = _pauseDurationDefault;
+            _pauseDuration = duration;
         }
 
         public void ResumeGame()
@@ -275,15 +276,25 @@ namespace SnelToetsenSjezer.Business
 
         public void HotKeyIsCorrect()
         {
-            gameStateUpdatedCallback("correct", new GameStateCallbackData() {
-                { "userinputsteps", GetUserInputSteps() }
-            });
             _gameHotKeys[_currHotKey].Failed = false;
-            PauseGame();
+            _gameHotKeys[_currHotKey].Completed = true;
+
+            GameStateCallbackData stateData = new GameStateCallbackData() {
+                { "userinputsteps", GetUserInputSteps() }
+            };
+            int numberOfIncomplete = _gameHotKeys.ToList().Where(h => h.Completed == false).Count();
+            if (numberOfIncomplete == 0)
+            {
+                stateData.Add("game_completed", "1");
+            }
+            gameStateUpdatedCallback("correct", stateData);
+
+            PauseGame(_pauseDurationCorrect);
         }
         public void HotKeyIsFailed()
         {
             _gameHotKeys[_currHotKey].Failed = true;
+            _gameHotKeys[_currHotKey].Completed = false;
 
             string hotKeySolutionStr = "";
             HotKeySolutions hotKeySolutions = _gameHotKeys[_currHotKey].Solutions;
@@ -299,7 +310,7 @@ namespace SnelToetsenSjezer.Business
                 { "userinputsteps", GetUserInputSteps() }
             };
             gameStateUpdatedCallback("failed", stateData);
-            PauseGame();
+            PauseGame(_pauseDurationFailed);
         }
 
         public void NextHotKey()

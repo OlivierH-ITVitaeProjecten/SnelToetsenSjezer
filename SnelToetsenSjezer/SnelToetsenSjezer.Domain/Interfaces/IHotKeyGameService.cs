@@ -10,7 +10,7 @@ namespace SnelToetsenSjezer.Domain.Interfaces
         void SetGameTimerCallback(Action<int, bool> callback);
         void StartGame();
         void StopGame(bool forceStop = false);
-        void PauseGame();
+        void PauseGame(int duration);
         void ResumeGame();
         void GameTimer_Tick(object sender, EventArgs e);
         string GameTicksToTimeStr();

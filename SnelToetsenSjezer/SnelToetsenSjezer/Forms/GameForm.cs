@@ -39,7 +39,16 @@ namespace SnelToetsenSjezer.WinForms.Forms
                     lbl_description_val.Text = stateDetails["description"];
                     break;
                 case "correct":
-                    lbl_description_val.Text = "Correct!\nGet ready for the next question!";
+                    string correctDescription = "Correct!\n";
+                    if (stateDetails.ContainsKey("game_completed"))
+                    {
+                        correctDescription += "This was the last question, opening results...";
+                    }
+                    else
+                    {
+                        correctDescription += "Get ready for the next question!";
+                    }
+                    lbl_description_val.Text = correctDescription;
                     break;
                 case "failed":
                     lbl_description_val.Text = "Failed!\n" +
