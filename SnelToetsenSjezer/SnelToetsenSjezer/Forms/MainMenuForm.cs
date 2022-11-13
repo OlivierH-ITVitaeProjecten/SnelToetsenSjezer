@@ -27,35 +27,34 @@ namespace SnelToetsenSjezer
             AllCategories = MyHotKeyService.GetCategories();
             lb_categories.DataSource = AllCategories;
             lb_categories.SetItemChecked(0, true);
-
-            HotKeysInSelectedCategories = MyHotKeyService.GetHotKeysInCategory(AllCategories[0]);
-            int initialMaxHotKeys = HotKeysInSelectedCategories.Count();
-
-            lbl_howmanyquestions.Text = $"How many questions? (1-{initialMaxHotKeys})";
-            num_howmanyquestions.Minimum = 1;
-            num_howmanyquestions.Maximum = initialMaxHotKeys;
-
-            num_howmanyquestions.Value = num_howmanyquestions.Maximum; // temp
+            HandleCategoryChanges();
 
             cmbbox_continue.SelectedIndex = 0;
         }
 
         public void HandleCategoryChanges()
         {
-            SelectedCategories.Clear();
+            List<string> userSelection = new List<string>();
             foreach (string category in lb_categories.CheckedItems)
             {
-                SelectedCategories.Add(category);
+                userSelection.Add(category);
             }
+            if (SelectedCategories.SequenceEqual(userSelection)) return;
 
+            SelectedCategories = userSelection;
             HotKeysInSelectedCategories = MyHotKeyService.GetHotKeysInCategories(SelectedCategories);
             int hotKeyCount = HotKeysInSelectedCategories.Count();
 
             lbl_howmanyquestions.Text = $"How many questions? (1-{hotKeyCount})";
+            num_howmanyquestions.Minimum = 1;
             num_howmanyquestions.Maximum = hotKeyCount;
-            if (num_howmanyquestions.Value > hotKeyCount) num_howmanyquestions.Value = hotKeyCount;
 
-            num_howmanyquestions.Value = num_howmanyquestions.Maximum; // temp
+            //if (num_howmanyquestions.Value > hotKeyCount) num_howmanyquestions.Value = hotKeyCount;
+            num_howmanyquestions.Value = hotKeyCount;
+            btn_howmanyquestions_5.Enabled = (hotKeyCount >= 5);
+            btn_howmanyquestions_10.Enabled = (hotKeyCount >= 10);
+            btn_howmanyquestions_25.Enabled = (hotKeyCount >= 25);
+
         }
 
         private void HowManyQuestions_ValueChanged(object sender, EventArgs e)
@@ -96,6 +95,24 @@ namespace SnelToetsenSjezer
             CheckedListBox chk = (CheckedListBox)sender;
             if (e.NewValue == CheckState.Unchecked && chk.CheckedItems.Count == 1)
                 e.NewValue = CheckState.Checked;
+        }
+
+        private void btn_howmanyquestions_Click(object sender, EventArgs e)
+        {
+            string btnId = ((Button)sender).Name.Substring(21);
+            switch (btnId)
+            {
+                case "max":
+                    num_howmanyquestions.Value = num_howmanyquestions.Maximum;
+                    break;
+                default:
+                    if (int.TryParse(btnId, out int btnIdNumber))
+                    {
+                        if (btnIdNumber <= num_howmanyquestions.Maximum)
+                            num_howmanyquestions.Value = btnIdNumber;
+                    }
+                    break;
+            }
         }
     }
 }

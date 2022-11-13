@@ -17,7 +17,7 @@
 		<hotkey description="Klap alle methoden uit" keys="ControlKey+M,ControlKey+P" />
 		<hotkey description="Code verkleinen" keys="ControlKey+ShiftKey+Oemcomma" />
 		<hotkey description="Code vergroten" keys="ControlKey+ShiftKey+OemPeriod" />
-		<hotkey description="Vind huidige file in solution explorer" keys="ControlKey+OemOpenBrackets,S" />
+		<hotkey description="Vind huidige file in solution explorer" keys="ControlKey+OemOpenBrackets,S||ControlKey+OemOpenBrackets,ControlKey+S" />
 		<hotkey description="Ga naar Git explorer" keys="ControlKey+D0,G||ControlKey+D0,ControlKey+G" />
 		<hotkey description="Ga naar Task window" keys="ControlKey+Oem5,T||ControlKey+Oem5,ControlKey+T" />
 		<hotkey description="Open plakbordmenu" keys="ControlKey+ShiftKey+V" />
@@ -38,8 +38,8 @@
 		<hotkey description="Ga naar breakpoints window" keys="ControlKey+Menu+B" />
 		<hotkey description="Dupliceer regel" keys="ControlKey+D" />
 		<hotkey description="Maak {} na if/while/methodenaam" keys="ShiftKey+Return" />
-		<hotkey description="Maak Console.WriteLine()" keys="C,W,Tab,Tab" />
-		<hotkey description="Maak constructor" keys="C,T,O,R,Tab,Tab" />
+		<hotkey description="Maak Console.WriteLine()" keys="'cw',Tab,Tab" />
+		<hotkey description="Maak constructor" keys="'ctor',Tab,Tab" />
 		<hotkey description="Omring door snippet" keys="ControlKey+K,ControlKey+S" />
 		<hotkey description="Algemeen refactoren" keys="ControlKey+OemPeriod" />
 		<hotkey description="Hernoem identifier" keys="ControlKey+R,ControlKey+R" />
@@ -51,8 +51,7 @@
 		<hotkey description="Formatteer code (normaal)" keys="ControlKey+K,ControlKey+D" />
 		<hotkey description="Formatteer code (bezem-mode)" keys="ControlKey+K,ControlKey+E" />
 		<hotkey description="Scroll tekst omlaag maar houd cursor op zelfde positie" keys="ControlKey+Up" />
-		<hotkey description="Scroll tekst omhoog
-				maar houd cursor op zelfde positie" keys="ControlKey+Down" />
+		<hotkey description="Scroll tekst omhoog maar houd cursor op zelfde positie" keys="ControlKey+Down" />
 		<hotkey description="Maak een property" keys="'prop',Tab,Tab" />
 		<hotkey description="Ga naar de solution explorer" keys="ControlKey+Menu+L" />
 		<hotkey description="Zet een breakpoint" keys="F9" />
@@ -79,16 +78,15 @@
 		<hotkey description="Ga naar begin van dit woord" keys="ControlKey+Left" />
 		<hotkey description="Ga naar ander tabblad" keys="ControlKey+Tab" />
 	</hotkey_group>
+	<!--
 	<hotkey_group name="String tests">
 		<hotkey description="'prop',Tab,Tab" keys="'prop',Tab,Tab" />
-		<!--
 		<hotkey description="Tab,'prop',Tab" keys="Tab,'prop',Tab" />
 		<hotkey description="Tab,Tab,'prop'" keys="Tab,Tab,'prop'" />
 		<hotkey description="'abc',ControlKey+Z" keys="'abc',ControlKey+Z" />
 		<hotkey description="ControlKey+Z,'abc'" keys="ControlKey+Z,'abc'" />
 		<hotkey description="Ctrl+A,'prop',Ctrl+B" keys="ControlKey+A,'prop',ControlKey+B" />
 		<hotkey description="'lorem','ipsum'" keys="'lorem','ipsum'" />
-		-->
 	</hotkey_group>
 	<hotkey_group name="test spul">
 		<hotkey description="NVIDIA Ding (Alt+F12)" keys="Menu+F12" />
@@ -101,4 +99,5 @@
 		<hotkey description="Ctrl+A,'prop'" keys="ControlKey+A,'prop'" />
 		<hotkey description="Ctrl+A,'prop',Ctrl+B" keys="ControlKey+A,'prop',ControlKey+B" />
 	</hotkey_group>
+	-->
 </hotkeys>
